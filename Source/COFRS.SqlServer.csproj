@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+    <Copyright>(C) 2020, Michael Zuniga</Copyright>
+    <Authors>Michael Zuniga</Authors>
+    <Company>Village West Consulting</Company>
+    <Description>A library to aid in the construction of RESTful Web Services</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/mzuniga58/COFRS.SqlServer</RepositoryUrl>
+    <Version>1.0.0-alpha</Version>
+    <PackageReleaseNotes>Pre-release. DO NOT USE.</PackageReleaseNotes>
+    <PackageId>COFRS.SqlServer</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PackageTags>REST, Resource Query Language, Web Services, Web API, RESTful</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Title>COFRS.SqlServer</Title>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <LangVersion>preview</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DocumentationFile>.\COFRS.SqlServer.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>.\COFRS.SqlServer.xml</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="COFRS" Version="1.0.1-alpha" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.0-preview3.19551.4" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
