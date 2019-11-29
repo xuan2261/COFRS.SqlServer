@@ -14,7 +14,7 @@ namespace COFRS.Rql.SqlServer
 	/// <summary>
 	/// Standard Api Repository
 	/// </summary>
-	public class ApiRepository : IApiRepository
+	public class SqlServerRepository : IRepository
 	{
 		/// <summary>
 		/// The logger
@@ -35,7 +35,7 @@ namespace COFRS.Rql.SqlServer
 		/// Initializes a repository with the specified options
 		/// </summary>
 		/// <param name="options"></param>
-		public ApiRepository(IRepositoryOptions options)
+		public SqlServerRepository(IRepositoryOptions options)
 		{
 			try
 			{
@@ -703,7 +703,7 @@ namespace COFRS.Rql.SqlServer
 		/// <summary>
 		/// Destructor
 		/// </summary>
-		~ApiRepository()
+		~SqlServerRepository()
 		{
 			// Do not change this code. Put cleanup code in Dispose(bool disposing) above.
 			Dispose(false);
