@@ -1051,33 +1051,33 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="T:COFRS.Rql.SqlServer.ApiRepository">
+        <member name="T:COFRS.Rql.SqlServer.SqlServerRepository">
             <summary>
             Standard Api Repository
             </summary>
         </member>
-        <member name="F:COFRS.Rql.SqlServer.ApiRepository.logger">
+        <member name="F:COFRS.Rql.SqlServer.SqlServerRepository.logger">
             <summary>
             The logger
             </summary>
         </member>
-        <member name="F:COFRS.Rql.SqlServer.ApiRepository._options">
+        <member name="F:COFRS.Rql.SqlServer.SqlServerRepository._options">
             <summary>
             The repository options used to connect to and interact with the database
             </summary>
         </member>
-        <member name="F:COFRS.Rql.SqlServer.ApiRepository._connection">
+        <member name="F:COFRS.Rql.SqlServer.SqlServerRepository._connection">
             <summary>
             The SQL Connection used to interact with the database
             </summary>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.#ctor(COFRS.IRepositoryOptions)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.#ctor(COFRS.IRepositoryOptions)">
             <summary>
             Initializes a repository with the specified options
             </summary>
             <param name="options"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.AddAsync``1(``0)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.AddAsync``1(``0)">
             <summary>
             Asynchronously adds an item to the datastore
             </summary>
@@ -1085,7 +1085,7 @@
             <param name="item">The item to add</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.DeleteAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.DeleteAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
             <summary>
             Deletes an item(s) from the datastore that match the specified keys. If no keys are specified
             all the items of type T will be deleted.
@@ -1093,7 +1093,7 @@
             <typeparam name="T">The type of item to delete</typeparam>
             <param name="keys">The keys that defined the item to be deleted</param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.GetCollectionAsync``1(COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetCollectionAsync``1(COFRS.Rql.RqlNode)">
             <summary>
             Gets a collection
             </summary>
@@ -1101,7 +1101,7 @@
             <param name="node">The compiled RQL Query</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.GetCollectionAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetCollectionAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
             <summary>
             Gets a collection
             </summary>
@@ -1110,7 +1110,7 @@
             <param name="node"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.GetSingleAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetSingleAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
             <summary>
             Returns a single item based on a set of keys
             </summary>
@@ -1119,7 +1119,7 @@
             <param name="node">The compiled RQL query</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.UpdateAsync``1(``0)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.UpdateAsync``1(``0)">
             <summary>
             Update an item in the repository
             </summary>
@@ -1127,7 +1127,7 @@
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.Add``1(``0)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Add``1(``0)">
             <summary>
             Synchronously adds a value to the datastore, and returns the newly added value
             with any identity columns filled in
@@ -1136,7 +1136,7 @@
             <param name="item">The item to add</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.Delete``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Delete``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
             <summary>
             Deletes an item(s) from the datastore that match the specified keys. If no keys are specified
             all the items of type T will be deleted.
@@ -1144,7 +1144,7 @@
             <typeparam name="T"></typeparam>
             <param name="keys"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.GetCollection``1(COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetCollection``1(COFRS.Rql.RqlNode)">
             <summary>
             Gets a collection of items of type T from the repository as a RqlCollection
             </summary>
@@ -1152,7 +1152,7 @@
             <param name="node"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.GetCollection``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetCollection``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
             <summary>
             Gets a collection
             </summary>
@@ -1161,7 +1161,7 @@
             <param name="node"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.GetSingle``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetSingle``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
             <summary>
             Get a single object of type T by a set of key values
             </summary>
@@ -1170,25 +1170,25 @@
             <param name="node">The compiled form of the RQL query</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.Update``1(``0)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Update``1(``0)">
             <summary>
             Updates an item in the datastore
             </summary>
             <typeparam name="T"></typeparam>
             <param name="item"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.Dispose(System.Boolean)">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Dispose(System.Boolean)">
             <summary>
             Disposes the respository
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.Finalize">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Finalize">
             <summary>
             Destructor
             </summary>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.ApiRepository.Dispose">
+        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Dispose">
             <summary>
             This code added to correctly implement the disposable pattern.
             </summary>
