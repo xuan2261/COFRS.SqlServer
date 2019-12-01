@@ -8,12 +8,12 @@
     <Description>A library to aid in the construction of RESTful Web Services</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/mzuniga58/COFRS.SqlServer</RepositoryUrl>
-    <Version>1.0.3-alpha</Version>
+    <Version>1.0.4-alpha</Version>
     <PackageReleaseNotes>Pre-release. DO NOT USE.</PackageReleaseNotes>
     <PackageId>COFRS.SqlServer</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <PackageTags>REST, Resource Query Language, Web Services, Web API, RESTful</PackageTags>
+    <PackageTags>REST, Resource Query Language, Web Services, Web API, RESTful, C#, SQLServer, .NET Core</PackageTags>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Title>COFRS.SqlServer</Title>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -36,7 +36,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="COFRS" Version="1.0.5-alpha" />
+    <PackageReference Include="COFRS" Version="1.0.6-alpha" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.0-preview3.19551.4" AllowedVersions="4.8.0-preview3.19551.4" />
   </ItemGroup>
 
