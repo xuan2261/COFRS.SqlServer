@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using COFRS.Rql;
+using Microsoft.Extensions.Logging;
 using Serilog.Context;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace COFRS.Rql.SqlServer
+namespace COFRS.SqlServer
 {
 	/// <summary>
 	/// Standard Api Repository

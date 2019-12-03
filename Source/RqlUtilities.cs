@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using COFRS.Rql;
+using System.Collections.Generic;
 
-namespace COFRS.Rql.SqlServer
+namespace COFRS.SqlServer
 {
 	/// <summary>
 	/// Utilties for RQL

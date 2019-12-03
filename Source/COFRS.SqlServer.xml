@@ -4,12 +4,12 @@
         <name>COFRS.SqlServer</name>
     </assembly>
     <members>
-        <member name="T:COFRS.Rql.SqlServer.Emitter">
+        <member name="T:COFRS.SqlServer.Emitter">
             <summary>
             Emitter class - returns the generated SQL statement
             </summary>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.BuildUpdateQuery``1(``0,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
+        <member name="M:COFRS.SqlServer.Emitter.BuildUpdateQuery``1(``0,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Updates an item in the datastore
             </summary>
@@ -18,7 +18,7 @@
             <param name="parameters"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.BuildDeleteQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
+        <member name="M:COFRS.SqlServer.Emitter.BuildDeleteQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Builds a query to delete an object from the datastore using the specfied keys
             </summary>
@@ -27,7 +27,7 @@
             <param name="parameters"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.BuildAddQuery``1(``0,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.Reflection.PropertyInfo@)">
+        <member name="M:COFRS.SqlServer.Emitter.BuildAddQuery``1(``0,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.Reflection.PropertyInfo@)">
             <summary>
             Build the SQL query to add an item to the datastore
             </summary>
@@ -37,7 +37,7 @@
             <param name="identityProperty"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.BuildSingleQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
+        <member name="M:COFRS.SqlServer.Emitter.BuildSingleQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Builds the SQL query for a single result
             </summary>
@@ -47,7 +47,7 @@
             <param name="parameters">The list of parameters for this query</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.BuildCollectionCountQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
+        <member name="M:COFRS.SqlServer.Emitter.BuildCollectionCountQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Builds the count query for the collection
             </summary>
@@ -56,7 +56,7 @@
             <param name="parameters"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.BuildCollectionListQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Int32,System.Int32,COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
+        <member name="M:COFRS.SqlServer.Emitter.BuildCollectionListQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Int32,System.Int32,COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Builds the count query for the collection
             </summary>
@@ -68,7 +68,7 @@
             <param name="parameters">Returns the list of parameters that need to be bound to the SQL statement</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.AddJoinConditions``1(System.Text.StringBuilder,COFRS.Table,COFRS.Join,System.Collections.Generic.IEnumerable{COFRS.JoinCondition},System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
+        <member name="M:COFRS.SqlServer.Emitter.AddJoinConditions``1(System.Text.StringBuilder,COFRS.Table,COFRS.Join,System.Collections.Generic.IEnumerable{COFRS.JoinCondition},System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Add join conditions
             </summary>
@@ -78,7 +78,7 @@
             <param name="currentJoinConditons"></param>
             <param name="parameters"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.ParseWhereClause``1(COFRS.Rql.RqlNode,System.String,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
+        <member name="M:COFRS.SqlServer.Emitter.ParseWhereClause``1(COFRS.Rql.RqlNode,System.String,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Returns a formatted WHERE clause representation of the filters in the query string
             </summary>
@@ -88,7 +88,7 @@
             <param name="parameters"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.Emitter.ParseOrderByClause``1(COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.Emitter.ParseOrderByClause``1(COFRS.Rql.RqlNode)">
             <summary>
             Returns a formatted ORDER BY clause representation of the sort operation in the query string
             </summary>
@@ -96,12 +96,12 @@
             <param name="node">The RQL node representation of the query string</param>
             <returns></returns>
         </member>
-        <member name="T:COFRS.Rql.SqlServer.RqlUtilities">
+        <member name="T:COFRS.SqlServer.RqlUtilities">
             <summary>
             Utilties for RQL
             </summary>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.RqlUtilities.ExtractClause(COFRS.Rql.RqlNodeType,COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.RqlUtilities.ExtractClause(COFRS.Rql.RqlNodeType,COFRS.Rql.RqlNode)">
             <summary>
             Extract a Clause from the compiled RQL Query
             </summary>
@@ -109,7 +109,7 @@
             <param name="node"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.RqlUtilities.ReplaceClause(COFRS.Rql.RqlNodeType,COFRS.Rql.RqlNode,COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.RqlUtilities.ReplaceClause(COFRS.Rql.RqlNodeType,COFRS.Rql.RqlNode,COFRS.Rql.RqlNode)">
             <summary>
             Replaces a clause with a new one in place
             </summary>
@@ -118,12 +118,12 @@
             <param name="replacement"></param>
             <returns></returns>
         </member>
-        <member name="T:COFRS.Rql.SqlServer.SqlExtensions">
+        <member name="T:COFRS.SqlServer.SqlExtensions">
             <summary>
             SQL Extensions
             </summary>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadBoolean(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadBoolean(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a boolean value from the database
             </summary>
@@ -131,7 +131,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadBooleanAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadBooleanAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a boolean value from the database
             </summary>
@@ -139,7 +139,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadBooleanAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadBooleanAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a boolean value from the database
             </summary>
@@ -148,7 +148,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableBoolean(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableBoolean(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable boolean value from the database
             </summary>
@@ -156,7 +156,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableBooleanAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableBooleanAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable boolean value from the database
             </summary>
@@ -164,7 +164,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableBooleanAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableBooleanAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable boolean value from the database
             </summary>
@@ -173,7 +173,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadByte(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadByte(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a byte value from the database
             </summary>
@@ -181,7 +181,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadByteAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadByteAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a byte value from the database
             </summary>
@@ -189,7 +189,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadByteAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadByteAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a byte value from the database
             </summary>
@@ -198,7 +198,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableByte(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableByte(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable byte value from the database
             </summary>
@@ -206,7 +206,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableByteAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableByteAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable byte value from the database
             </summary>
@@ -214,7 +214,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableByteAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableByteAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable byte value from the database
             </summary>
@@ -223,7 +223,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadSByte(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadSByte(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a signed byte value from the database
             </summary>
@@ -231,7 +231,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadSByteAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadSByteAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a signed byte value from the database
             </summary>
@@ -239,7 +239,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadSByteAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadSByteAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a signed byte value from the database
             </summary>
@@ -248,7 +248,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableSByte(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableSByte(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable signed byte value from the database
             </summary>
@@ -256,7 +256,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableSByteAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableSByteAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable signed byte value from the database
             </summary>
@@ -264,7 +264,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableSByteAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableSByteAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable signed byte value from the database
             </summary>
@@ -273,7 +273,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt16(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt16(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a short interger value from the database
             </summary>
@@ -281,7 +281,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt16Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt16Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a short interger value from the database
             </summary>
@@ -289,7 +289,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt16Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt16Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a short interger value from the database
             </summary>
@@ -298,7 +298,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt16(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt16(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a short interger value from the database
             </summary>
@@ -306,7 +306,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt16Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt16Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a short interger value from the database
             </summary>
@@ -314,7 +314,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt16Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt16Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a short interger value from the database
             </summary>
@@ -323,7 +323,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt16(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt16(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads an unsigned short interger value from the database
             </summary>
@@ -331,7 +331,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt16Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt16Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads an unsigned short interger value from the database
             </summary>
@@ -339,7 +339,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt16Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt16Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads an unsigned short interger value from the database
             </summary>
@@ -348,7 +348,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt16(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt16(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable unsigned short interger value from the database
             </summary>
@@ -356,7 +356,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt16Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt16Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable unsigned short interger value from the database
             </summary>
@@ -364,7 +364,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt16Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt16Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable unsigned short interger value from the database
             </summary>
@@ -373,7 +373,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt32(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt32(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads an interger value from the database
             </summary>
@@ -381,7 +381,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt32Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt32Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads an interger value from the database
             </summary>
@@ -389,7 +389,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt32Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt32Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads an interger value from the database
             </summary>
@@ -398,7 +398,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt32(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt32(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable interger value from the database
             </summary>
@@ -406,7 +406,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt32Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt32Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable interger value from the database
             </summary>
@@ -414,7 +414,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt32Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt32Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable interger value from the database
             </summary>
@@ -423,7 +423,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt32(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt32(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads an unsigned interger value from the database
             </summary>
@@ -431,7 +431,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt32Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt32Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads an unsigned interger value from the database
             </summary>
@@ -439,7 +439,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt32Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt32Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads an unsigned interger value from the database
             </summary>
@@ -448,7 +448,7 @@
             <param name="token">The Cancellation Token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt32(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt32(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable unsigned interger value from the database
             </summary>
@@ -456,7 +456,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt32Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt32Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable unsigned interger value from the database
             </summary>
@@ -464,7 +464,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt32Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt32Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable unsigned interger value from the database
             </summary>
@@ -473,7 +473,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt64(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt64(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a long interger value from the database
             </summary>
@@ -481,7 +481,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt64Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt64Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a long interger value from the database
             </summary>
@@ -489,7 +489,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadInt64Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadInt64Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a long interger value from the database
             </summary>
@@ -498,7 +498,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt64(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt64(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable long interger value from the database
             </summary>
@@ -506,7 +506,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt64Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt64Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable long interger value from the database
             </summary>
@@ -514,7 +514,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableInt64Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableInt64Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable long interger value from the database
             </summary>
@@ -523,7 +523,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt64(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt64(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads an unsigned long interger value from the database
             </summary>
@@ -531,7 +531,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt64Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt64Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads an unsigned long interger value from the database
             </summary>
@@ -539,7 +539,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadUInt64Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadUInt64Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads an unsigned long interger value from the database
             </summary>
@@ -548,7 +548,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt64(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt64(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable unsigned long interger value from the database
             </summary>
@@ -556,7 +556,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt64Async(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt64Async(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable unsigned long interger value from the database
             </summary>
@@ -564,7 +564,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableUInt64Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableUInt64Async(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable unsigned long interger value from the database
             </summary>
@@ -573,7 +573,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadGuid(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadGuid(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a Guid value from the database
             </summary>
@@ -581,7 +581,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadGuidAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadGuidAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a Guid value from the database
             </summary>
@@ -589,7 +589,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadGuidAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadGuidAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a Guid value from the database
             </summary>
@@ -598,7 +598,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableGuid(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableGuid(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable Guid value from the database
             </summary>
@@ -606,7 +606,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableGuidAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableGuidAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable Guid value from the database
             </summary>
@@ -614,7 +614,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableGuidAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableGuidAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable Guid value from the database
             </summary>
@@ -623,7 +623,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadString(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadString(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a string value from the database
             </summary>
@@ -631,7 +631,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadStringAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadStringAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a string value from the database
             </summary>
@@ -639,7 +639,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadStringAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadStringAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a string value from the database
             </summary>
@@ -648,7 +648,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDecimal(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDecimal(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a decimal value from the database
             </summary>
@@ -656,7 +656,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDecimalAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDecimalAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a decimal value from the database
             </summary>
@@ -664,7 +664,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDecimalAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDecimalAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a decimal value from the database
             </summary>
@@ -673,7 +673,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDecimal(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDecimal(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable decimal value from the database
             </summary>
@@ -681,7 +681,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDecimalAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDecimalAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable decimal value from the database
             </summary>
@@ -689,7 +689,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDecimalAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDecimalAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable decimal value from the database
             </summary>
@@ -698,7 +698,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadChar(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadChar(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a char value from the database
             </summary>
@@ -706,7 +706,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadCharAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadCharAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a char value from the database
             </summary>
@@ -714,7 +714,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadCharAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadCharAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a char value from the database
             </summary>
@@ -723,7 +723,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableChar(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableChar(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable char value from the database
             </summary>
@@ -731,7 +731,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableCharAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableCharAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable char value from the database
             </summary>
@@ -739,7 +739,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableCharAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableCharAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable char value from the database
             </summary>
@@ -748,7 +748,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDouble(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDouble(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a double value from the database
             </summary>
@@ -756,7 +756,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDoubleAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDoubleAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a double value from the database
             </summary>
@@ -764,7 +764,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDoubleAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDoubleAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a double value from the database
             </summary>
@@ -773,7 +773,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDouble(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDouble(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable double value from the database
             </summary>
@@ -781,7 +781,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDoubleAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDoubleAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable double value from the database
             </summary>
@@ -789,7 +789,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDoubleAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDoubleAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable double value from the database
             </summary>
@@ -798,7 +798,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadSingle(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadSingle(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a single value from the database
             </summary>
@@ -806,7 +806,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadSingleAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadSingleAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a single value from the database
             </summary>
@@ -814,7 +814,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadSingleAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadSingleAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a single value from the database
             </summary>
@@ -823,7 +823,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableSingle(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableSingle(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable single value from the database
             </summary>
@@ -831,7 +831,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableSingleAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableSingleAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable single value from the database
             </summary>
@@ -839,7 +839,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableSingleAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableSingleAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable single value from the database
             </summary>
@@ -848,7 +848,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDateTime(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDateTime(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a date/time value from the database
             </summary>
@@ -856,7 +856,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDateTimeAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDateTimeAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a date/time value from the database
             </summary>
@@ -864,7 +864,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDateTimeAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDateTimeAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a date/time value from the database
             </summary>
@@ -873,7 +873,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDateTime(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDateTime(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable date/time value from the database
             </summary>
@@ -881,7 +881,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDateTimeAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDateTimeAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable date/time value from the database
             </summary>
@@ -889,7 +889,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDateTimeAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDateTimeAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable date/time value from the database
             </summary>
@@ -898,7 +898,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDateTimeOffset(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDateTimeOffset(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a date/time value from the database
             </summary>
@@ -906,7 +906,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDateTimeOffsetAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDateTimeOffsetAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a date/time value from the database
             </summary>
@@ -914,7 +914,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadDateTimeOffsetAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadDateTimeOffsetAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a date/time value from the database
             </summary>
@@ -923,7 +923,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDateTimeOffset(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDateTimeOffset(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable date/time value from the database
             </summary>
@@ -931,7 +931,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDateTimeOffsetAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDateTimeOffsetAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable date/time value from the database
             </summary>
@@ -939,7 +939,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableDateTimeOffsetAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableDateTimeOffsetAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable date/time value from the database
             </summary>
@@ -948,7 +948,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadTimeSpan(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadTimeSpan(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a TimeSpan value from the database
             </summary>
@@ -956,7 +956,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadTimeSpanAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadTimeSpanAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a TimeSpan value from the database
             </summary>
@@ -964,7 +964,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadTimeSpanAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadTimeSpanAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a TimeSpan value from the database
             </summary>
@@ -973,7 +973,7 @@
             <param name="token">The cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableTimeSpan(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableTimeSpan(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable TimeSpan value from the database
             </summary>
@@ -981,7 +981,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableTimeSpanAsync(System.Data.SqlClient.SqlDataReader,System.String)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableTimeSpanAsync(System.Data.SqlClient.SqlDataReader,System.String)">
             <summary>
             Reads a nullable TimeSpan value from the database
             </summary>
@@ -989,7 +989,7 @@
             <param name="columnName">The name of the column to read from</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadNullableTimeSpanAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadNullableTimeSpanAsync(System.Data.SqlClient.SqlDataReader,System.String,System.Threading.CancellationToken)">
             <summary>
             Reads a nullable TimeSpan value from the database
             </summary>
@@ -998,7 +998,7 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadProperty``1(System.Data.SqlClient.SqlDataReader,System.Reflection.PropertyInfo)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadProperty``1(System.Data.SqlClient.SqlDataReader,System.Reflection.PropertyInfo)">
             <summary>
             Read the property
             </summary>
@@ -1006,7 +1006,7 @@
             <param name="reader"></param>
             <param name="property"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadPropertyAsync``1(System.Data.SqlClient.SqlDataReader,System.Reflection.PropertyInfo)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadPropertyAsync``1(System.Data.SqlClient.SqlDataReader,System.Reflection.PropertyInfo)">
             <summary>
             Read the property
             </summary>
@@ -1014,7 +1014,7 @@
             <param name="reader"></param>
             <param name="property"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadPropertyAsync``1(System.Data.SqlClient.SqlDataReader,System.Reflection.PropertyInfo,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadPropertyAsync``1(System.Data.SqlClient.SqlDataReader,System.Reflection.PropertyInfo,System.Threading.CancellationToken)">
             <summary>
             Read the property
             </summary>
@@ -1023,7 +1023,7 @@
             <param name="property"></param>
             <param name="token">The Cancellation token</param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.Read``1(System.Data.SqlClient.SqlDataReader,COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.Read``1(System.Data.SqlClient.SqlDataReader,COFRS.Rql.RqlNode)">
             <summary>
             Creates and populates an object of type T from the data in the database.
             </summary>
@@ -1032,7 +1032,7 @@
             <param name="node">The list of fields to populate</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadAsync``1(System.Data.SqlClient.SqlDataReader,COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadAsync``1(System.Data.SqlClient.SqlDataReader,COFRS.Rql.RqlNode)">
             <summary>
             Creates and populates an object of type T from the data in the database.
             </summary>
@@ -1041,7 +1041,7 @@
             <param name="node">The list of fields to populate</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlExtensions.ReadAsync``1(System.Data.SqlClient.SqlDataReader,COFRS.Rql.RqlNode,System.Threading.CancellationToken)">
+        <member name="M:COFRS.SqlServer.SqlExtensions.ReadAsync``1(System.Data.SqlClient.SqlDataReader,COFRS.Rql.RqlNode,System.Threading.CancellationToken)">
             <summary>
             Creates and populates an object of type T from the data in the database.
             </summary>
@@ -1051,33 +1051,33 @@
             <param name="token">The Cancellation token</param>
             <returns></returns>
         </member>
-        <member name="T:COFRS.Rql.SqlServer.SqlServerRepository">
+        <member name="T:COFRS.SqlServer.SqlServerRepository">
             <summary>
             Standard Api Repository
             </summary>
         </member>
-        <member name="F:COFRS.Rql.SqlServer.SqlServerRepository.logger">
+        <member name="F:COFRS.SqlServer.SqlServerRepository.logger">
             <summary>
             The logger
             </summary>
         </member>
-        <member name="F:COFRS.Rql.SqlServer.SqlServerRepository._options">
+        <member name="F:COFRS.SqlServer.SqlServerRepository._options">
             <summary>
             The repository options used to connect to and interact with the database
             </summary>
         </member>
-        <member name="F:COFRS.Rql.SqlServer.SqlServerRepository._connection">
+        <member name="F:COFRS.SqlServer.SqlServerRepository._connection">
             <summary>
             The SQL Connection used to interact with the database
             </summary>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.#ctor(COFRS.IRepositoryOptions)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.#ctor(COFRS.IRepositoryOptions)">
             <summary>
             Initializes a repository with the specified options
             </summary>
             <param name="options"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.AddAsync``1(``0)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.AddAsync``1(``0)">
             <summary>
             Asynchronously adds an item to the datastore
             </summary>
@@ -1085,7 +1085,7 @@
             <param name="item">The item to add</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.DeleteAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.DeleteAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
             <summary>
             Deletes an item(s) from the datastore that match the specified keys. If no keys are specified
             all the items of type T will be deleted.
@@ -1093,7 +1093,7 @@
             <typeparam name="T">The type of item to delete</typeparam>
             <param name="keys">The keys that defined the item to be deleted</param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetCollectionAsync``1(COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollectionAsync``1(COFRS.Rql.RqlNode)">
             <summary>
             Gets a collection
             </summary>
@@ -1101,7 +1101,7 @@
             <param name="node">The compiled RQL Query</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetCollectionAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollectionAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
             <summary>
             Gets a collection
             </summary>
@@ -1110,7 +1110,7 @@
             <param name="node"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetSingleAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetSingleAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
             <summary>
             Returns a single item based on a set of keys
             </summary>
@@ -1119,7 +1119,7 @@
             <param name="node">The compiled RQL query</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.UpdateAsync``1(``0)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.UpdateAsync``1(``0)">
             <summary>
             Update an item in the repository
             </summary>
@@ -1127,7 +1127,7 @@
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Add``1(``0)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.Add``1(``0)">
             <summary>
             Synchronously adds a value to the datastore, and returns the newly added value
             with any identity columns filled in
@@ -1136,7 +1136,7 @@
             <param name="item">The item to add</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Delete``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.Delete``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
             <summary>
             Deletes an item(s) from the datastore that match the specified keys. If no keys are specified
             all the items of type T will be deleted.
@@ -1144,7 +1144,7 @@
             <typeparam name="T"></typeparam>
             <param name="keys"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetCollection``1(COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollection``1(COFRS.Rql.RqlNode)">
             <summary>
             Gets a collection of items of type T from the repository as a RqlCollection
             </summary>
@@ -1152,7 +1152,7 @@
             <param name="node"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetCollection``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollection``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
             <summary>
             Gets a collection
             </summary>
@@ -1161,7 +1161,7 @@
             <param name="node"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.GetSingle``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetSingle``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
             <summary>
             Get a single object of type T by a set of key values
             </summary>
@@ -1170,25 +1170,25 @@
             <param name="node">The compiled form of the RQL query</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Update``1(``0)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.Update``1(``0)">
             <summary>
             Updates an item in the datastore
             </summary>
             <typeparam name="T"></typeparam>
             <param name="item"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Dispose(System.Boolean)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.Dispose(System.Boolean)">
             <summary>
             Disposes the respository
             </summary>
             <param name="disposing"></param>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Finalize">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.Finalize">
             <summary>
             Destructor
             </summary>
         </member>
-        <member name="M:COFRS.Rql.SqlServer.SqlServerRepository.Dispose">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.Dispose">
             <summary>
             This code added to correctly implement the disposable pattern.
             </summary>

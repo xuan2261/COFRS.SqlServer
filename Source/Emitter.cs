@@ -6,8 +6,9 @@ using System.Linq;
 using System.Net;
 using System.Data.SqlClient;
 using System.Data;
+using COFRS.Rql;
 
-namespace COFRS.Rql.SqlServer
+namespace COFRS.SqlServer
 {
 	/// <summary>
 	/// Emitter class - returns the generated SQL statement
