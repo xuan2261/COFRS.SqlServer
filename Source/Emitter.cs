@@ -1564,17 +1564,17 @@ namespace COFRS.SqlServer
 					}
 					catch (FormatException error)
 					{
-						throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("exception", "Unknown exception"), error);
+						throw new ApiException(HttpStatusCode.BadRequest, new ApiError("exception", "Unknown exception"), error);
 					}
 				}
 				else
 				{
-					throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+					throw new ApiException(HttpStatusCode.BadRequest, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
 				}
 			}
 			else
 			{
-				throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("invalid_operation", $"Malformed RQL query: {attributeName} is not a member of {typeof(T).Name}."));
 			}
 		}
 
