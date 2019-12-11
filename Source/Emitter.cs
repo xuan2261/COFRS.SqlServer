@@ -658,6 +658,7 @@ namespace COFRS.SqlServer
 			var whereClause = ParseWhereClause<T>(node, null, parameters);
 			var orderByClause = ParseOrderByClause<T>(node);
 			var selectFields = RqlUtilities.ExtractClause(RqlNodeType.SELECT, node);
+			var options = ServiceFactory.Get<IRepositoryOptions>();
 
 			var properties = typeof(T).GetProperties();
 			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
@@ -1093,8 +1094,16 @@ namespace COFRS.SqlServer
 						sql.Append(")");
 				}
 
-				var start = pageFilter.Value<int>(0);
-				count = pageFilter.Value<int>(1);
+				int start = 1;
+
+				if (pageFilter != null)
+				{
+					start = pageFilter.Value<int>(0);
+					count = pageFilter.Value<int>(1);
+				}
+
+				if (count > options.BatchLimit)
+					count = options.BatchLimit;
 
 				sql.AppendLine($") as [t0]");
 				sql.AppendLine($" WHERE [t0].[ROW_NUMBER] BETWEEN {start} AND {start + count - 1}");
