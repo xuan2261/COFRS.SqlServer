@@ -1773,7 +1773,7 @@ namespace COFRS.SqlServer
 		/// <param name="property"></param>
 		public static object ReadProperty<T>(this SqlDataReader reader, PropertyInfo property)
 		{
-			var memberAttribute = property.GetCustomAttribute<Member>();
+			var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 			var propertyType = property.PropertyType;
 
 			if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -2015,7 +2015,7 @@ namespace COFRS.SqlServer
 		/// <param name="property"></param>
 		public static async Task<object> ReadPropertyAsync<T>(this SqlDataReader reader, PropertyInfo property)
 		{
-			var memberAttribute = property.GetCustomAttribute<Member>();
+			var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 			var propertyType = property.PropertyType;
 
 			if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -2258,7 +2258,7 @@ namespace COFRS.SqlServer
 		/// <param name="token">The Cancellation token</param>
 		public static async Task<object> ReadPropertyAsync<T>(this SqlDataReader reader, PropertyInfo property, CancellationToken token)
 		{
-			var memberAttribute = property.GetCustomAttribute<Member>();
+			var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 			var propertyType = property.PropertyType;
 
 			if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
@@ -2515,7 +2515,7 @@ namespace COFRS.SqlServer
 
 					if (property != null)
 					{
-						var memberAttribute = property.GetCustomAttribute<Member>();
+						var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 						if (memberAttribute != null)
 						{
@@ -2531,7 +2531,7 @@ namespace COFRS.SqlServer
 				foreach (var property in properties)
 				{
 					//	Decide if we want to include this field in the result set. It must be a member attribute to be read from the database
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 					if (memberAttribute != null)
 					{
@@ -2545,7 +2545,7 @@ namespace COFRS.SqlServer
 																			//  and this field is not in the list.
 							selectFields.Value<List<string>>().FirstOrDefault(x => string.Equals(x, property.Name, StringComparison.OrdinalIgnoreCase)) == null)
 						{
-							readProperty = property.GetCustomAttribute<Member>().IsPrimaryKey ? true : false;
+							readProperty = property.GetCustomAttribute<MemberAttribute>().IsPrimaryKey ? true : false;
 						}
 
 						if (readProperty)
@@ -2595,7 +2595,7 @@ namespace COFRS.SqlServer
 
 					if (property != null)
 					{
-						var memberAttribute = property.GetCustomAttribute<Member>();
+						var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 						if (memberAttribute != null)
 						{
@@ -2611,7 +2611,7 @@ namespace COFRS.SqlServer
 				foreach (var property in properties)
 				{
 					//	Decide if we want to include this field in the result set. It must be a member attribute to be read from the database
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 					if (memberAttribute != null)
 					{
@@ -2625,7 +2625,7 @@ namespace COFRS.SqlServer
 																			//  and this field is not in the list.
 							selectFields.Value<List<string>>().FirstOrDefault(x => string.Equals(x, property.Name, StringComparison.OrdinalIgnoreCase)) == null)
 						{
-							readProperty = property.GetCustomAttribute<Member>().IsPrimaryKey ? true : false;
+							readProperty = property.GetCustomAttribute<MemberAttribute>().IsPrimaryKey ? true : false;
 						}
 
 						if (readProperty)
@@ -2678,7 +2678,7 @@ namespace COFRS.SqlServer
 
 					if (property != null)
 					{
-						var memberAttribute = property.GetCustomAttribute<Member>();
+						var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 						if (memberAttribute != null)
 						{
@@ -2694,7 +2694,7 @@ namespace COFRS.SqlServer
 				foreach (var property in properties)
 				{
 					//	Decide if we want to include this field in the result set. It must be a member attribute to be read from the database
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 					if (memberAttribute != null)
 					{
@@ -2708,7 +2708,7 @@ namespace COFRS.SqlServer
 																			//  and this field is not in the list.
 							selectFields.Value<List<string>>().FirstOrDefault(x => string.Equals(x, property.Name, StringComparison.OrdinalIgnoreCase)) == null)
 						{
-							readProperty = property.GetCustomAttribute<Member>().IsPrimaryKey ? true : false;
+							readProperty = property.GetCustomAttribute<MemberAttribute>().IsPrimaryKey ? true : false;
 						}
 
 						if (readProperty)

@@ -32,7 +32,7 @@ namespace COFRS.SqlServer
 
 			foreach (var property in properties)
 			{
-				var memberAttribute = property.GetCustomAttribute<Member>();
+				var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 				if (memberAttribute != null)
 				{
@@ -61,7 +61,7 @@ namespace COFRS.SqlServer
 
 			foreach (var property in properties)
 			{
-				var memberAttribute = property.GetCustomAttribute<Member>();
+				var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 				if (memberAttribute != null)
 				{
@@ -121,7 +121,7 @@ namespace COFRS.SqlServer
 
 					if (property != null)
 					{
-						var memberAttribute = property.GetCustomAttribute<Member>();
+						var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 						if (memberAttribute != null)
 						{
@@ -184,7 +184,7 @@ namespace COFRS.SqlServer
 
 			foreach (var property in properties)
 			{
-				var memberAttribute = property.GetCustomAttribute<Member>();
+				var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 				if (memberAttribute != null)
 				{
@@ -226,7 +226,7 @@ namespace COFRS.SqlServer
 			{
 				foreach (var property in properties)
 				{
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 					if (memberAttribute != null)
 					{
@@ -245,7 +245,7 @@ namespace COFRS.SqlServer
 
 			foreach (var property in properties)
 			{
-				var memberAttribute = property.GetCustomAttribute<Member>();
+				var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 				if (memberAttribute != null)				{
 					var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
@@ -373,7 +373,7 @@ namespace COFRS.SqlServer
 				foreach (var property in properties)
 				{
 					bool includeField = true;
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 					if (memberAttribute != null)
 					{
@@ -480,7 +480,7 @@ namespace COFRS.SqlServer
 			foreach (var pair in keyList)
 			{
 				var property = properties.FirstOrDefault(x => x.Name.ToLower() == pair.Key.ToLower());
-				var memberAttribute = property.GetCustomAttribute<Member>(false);
+				var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 				var schema = string.IsNullOrWhiteSpace(memberAttribute.Schema) ? tableAttribute.Schema : memberAttribute.Schema;
 				var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 				var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
@@ -600,7 +600,7 @@ namespace COFRS.SqlServer
 				sql.Append(" WHERE ");
 				clausesAdded = true;
 				var property = properties.FirstOrDefault(x => x.Name.ToLower() == pair.Key.ToLower());
-				var memberAttribute = property.GetCustomAttribute<Member>(false);
+				var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 				var schema = string.IsNullOrWhiteSpace(memberAttribute.Schema) ? tableAttribute.Schema : memberAttribute.Schema;
 				var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 				var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
@@ -683,7 +683,7 @@ namespace COFRS.SqlServer
 
 				foreach (var property in properties)
 				{
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 					var includeField = (memberAttribute == null) ? false : true;
 
 					if (selectFields != null &&     //	we have a list 
@@ -787,7 +787,7 @@ namespace COFRS.SqlServer
 					sql.Append(" WHERE ");
 					clausesAdded = true;
 					var property = properties.FirstOrDefault(x => x.Name.ToLower() == pair.Key.ToLower());
-					var memberAttribute = property.GetCustomAttribute<Member>(false);
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 					var schema = string.IsNullOrWhiteSpace(memberAttribute.Schema) ? tableAttribute.Schema : memberAttribute.Schema;
 					var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 					var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
@@ -850,7 +850,7 @@ namespace COFRS.SqlServer
 
 				foreach (var property in properties)
 				{
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 					if (memberAttribute != null)
 					{
@@ -893,7 +893,7 @@ namespace COFRS.SqlServer
 
 				if (string.IsNullOrWhiteSpace(orderByClause))
 				{
-					var primaryKeyProperties = properties.Where(x => x.GetCustomAttribute<Member>() != null && x.GetCustomAttribute<Member>().IsPrimaryKey);
+					var primaryKeyProperties = properties.Where(x => x.GetCustomAttribute<MemberAttribute>() != null && x.GetCustomAttribute<MemberAttribute>().IsPrimaryKey);
 
 					if (primaryKeyProperties.Count() > 1)
 					{
@@ -904,7 +904,7 @@ namespace COFRS.SqlServer
 						{
 							var tableName = tableAttribute.Name;
 							var schema = tableAttribute.Schema;
-							var memberAttribute = composite.GetCustomAttribute<Member>();
+							var memberAttribute = composite.GetCustomAttribute<MemberAttribute>();
 							var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? composite.Name : memberAttribute.ColumnName;
 
 							if (firstComponent)
@@ -926,11 +926,11 @@ namespace COFRS.SqlServer
 					}
 					else if ( primaryKeyProperties.Count() > 0 )
 					{
-						var primaryKeyProperty = properties.FirstOrDefault(x => x.GetCustomAttribute<Member>() != null && x.GetCustomAttribute<Member>().IsPrimaryKey);
+						var primaryKeyProperty = properties.FirstOrDefault(x => x.GetCustomAttribute<MemberAttribute>() != null && x.GetCustomAttribute<MemberAttribute>().IsPrimaryKey);
 
-						var tableName = primaryKeyProperty != null ? (string.IsNullOrWhiteSpace(primaryKeyProperty.GetCustomAttribute<Member>().TableName) ? tableAttribute.Name : primaryKeyProperty.GetCustomAttribute<Member>().TableName) : tableAttribute.Name;
-						var schema = primaryKeyProperty != null ? (string.IsNullOrWhiteSpace(primaryKeyProperty.GetCustomAttribute<Member>().Schema) ? tableAttribute.Schema : primaryKeyProperty.GetCustomAttribute<Member>().Schema) : tableAttribute.Schema;
-						var columnName = string.IsNullOrWhiteSpace(primaryKeyProperty.GetCustomAttribute<Member>().ColumnName) ? primaryKeyProperty.Name : primaryKeyProperty.GetCustomAttribute<Member>().ColumnName;
+						var tableName = primaryKeyProperty != null ? (string.IsNullOrWhiteSpace(primaryKeyProperty.GetCustomAttribute<MemberAttribute>().TableName) ? tableAttribute.Name : primaryKeyProperty.GetCustomAttribute<MemberAttribute>().TableName) : tableAttribute.Name;
+						var schema = primaryKeyProperty != null ? (string.IsNullOrWhiteSpace(primaryKeyProperty.GetCustomAttribute<MemberAttribute>().Schema) ? tableAttribute.Schema : primaryKeyProperty.GetCustomAttribute<MemberAttribute>().Schema) : tableAttribute.Schema;
+						var columnName = string.IsNullOrWhiteSpace(primaryKeyProperty.GetCustomAttribute<MemberAttribute>().ColumnName) ? primaryKeyProperty.Name : primaryKeyProperty.GetCustomAttribute<MemberAttribute>().ColumnName;
 
 						if (string.IsNullOrWhiteSpace(schema))
 							sql.Append($" ORDER BY [{tableName}].[{columnName}] asc ");
@@ -949,7 +949,7 @@ namespace COFRS.SqlServer
 
 				foreach (var property in properties)
 				{
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 					var includeField = (memberAttribute == null) ? false : true;
 
 					if (selectFields != null &&     //	we have a list 
@@ -1055,7 +1055,7 @@ namespace COFRS.SqlServer
 					sql.Append(" WHERE ");
 					clausesAdded = true;
 					var property = properties.FirstOrDefault(x => x.Name.ToLower() == pair.Key.ToLower());
-					var memberAttribute = property.GetCustomAttribute<Member>(false);
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 					var schema = string.IsNullOrWhiteSpace(memberAttribute.Schema) ? tableAttribute.Schema : memberAttribute.Schema;
 					var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 					var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
@@ -1355,7 +1355,7 @@ namespace COFRS.SqlServer
 						
 						if (property != null)
 						{
-							var memberAttribute = property.GetCustomAttribute<Member>(false);
+							var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 
 							if (memberAttribute != null)
 							{
@@ -1398,7 +1398,7 @@ namespace COFRS.SqlServer
 
 						if (property != null)
 						{
-							var memberAttribute = property.GetCustomAttribute<Member>(false);
+							var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 
 							if (memberAttribute != null)
 							{
@@ -1441,7 +1441,7 @@ namespace COFRS.SqlServer
 
 						if (property != null)
 						{
-							var memberAttribute = property.GetCustomAttribute<Member>(false);
+							var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 
 							if (memberAttribute != null)
 							{
@@ -1480,7 +1480,7 @@ namespace COFRS.SqlServer
 
 						if (property != null)
 						{
-							var memberAttribute = property.GetCustomAttribute<Member>(false);
+							var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 
 							if (memberAttribute != null)
 							{
@@ -1524,7 +1524,7 @@ namespace COFRS.SqlServer
 
 			if (property != null)
 			{
-				var memberAttribute = property.GetCustomAttribute<Member>(false);
+				var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 
 				if (memberAttribute != null)
 				{
@@ -1637,7 +1637,7 @@ namespace COFRS.SqlServer
 
 							if (property != null)
 							{
-								var memberAttribute = property.GetCustomAttribute<Member>(false);
+								var memberAttribute = property.GetCustomAttribute<MemberAttribute>(false);
 
 								if (memberAttribute != null)
 								{
@@ -1689,7 +1689,7 @@ namespace COFRS.SqlServer
 			{
 				if (value == DBNull.Value)
 				{
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 					if (memberAttribute.StringType == StringType.UNICODE)
 					{
@@ -1708,7 +1708,7 @@ namespace COFRS.SqlServer
 				}
 				else
 				{
-					var memberAttribute = property.GetCustomAttribute<Member>();
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
 					if (memberAttribute.StringType == StringType.UNICODE)
 					{
