@@ -70,7 +70,7 @@ namespace COFRS.SqlServer
 
 					if (string.Equals(tableName, tableAttribute.Name, StringComparison.InvariantCulture))
 					{
-						if (memberAttribute.IsPrimaryKey)
+						if (!memberAttribute.IsPrimaryKey)
 						{
 							var parameterName = $"@P{parameters.Count}";
 							parameters.Add(BuildSqlParameter(parameterName, property, property.GetValue(item) ?? DBNull.Value));
@@ -643,16 +643,17 @@ namespace COFRS.SqlServer
 		}
 
 		/// <summary>
-		/// Builds the count query for the collection
+		/// Builds the SQL query for the collection
 		/// </summary>
 		/// <param name="keyList">The list of key value pairs that limit the scope of the collection</param>
 		/// <param name="node">The compiled RQL query</param>
 		/// <param name="count">The number of records in the collection</param>
 		/// <param name="batchLimit">The maximum number of items that can be included in a collection batch</param>
 		/// <param name="pageFilter">The page filter that applies to the collection</param>
-		/// <param name="parameters">Returns the list of parameters that need to be bound to the SQL statement</param>
+		/// <param name="parameters">The parameters for the SQL query</param>
+		/// <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
 		/// <returns></returns>
-		internal static string BuildCollectionListQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, int count, int batchLimit, RqlNode pageFilter, List<SqlParameter> parameters)
+		internal static string BuildCollectionListQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, int count, int batchLimit, RqlNode pageFilter, List<SqlParameter> parameters, bool NoPaging)
 		{
 			var sql = new StringBuilder();
 			var whereClause = ParseWhereClause<T>(node, null, parameters);
@@ -665,7 +666,7 @@ namespace COFRS.SqlServer
 			var joinAttributes = typeof(T).GetCustomAttributes<Join>(false);
 			var joinConditions = typeof(T).GetCustomAttributes<JoinCondition>(false);
 
-			if (count < batchLimit && pageFilter == null)
+			if (NoPaging || (count < batchLimit && pageFilter == null))
 			{
 				bool firstField = true;
 
@@ -924,7 +925,7 @@ namespace COFRS.SqlServer
 							}
 						}
 					}
-					else if ( primaryKeyProperties.Count() > 0 )
+					else if (primaryKeyProperties.Count() > 0)
 					{
 						var primaryKeyProperty = properties.FirstOrDefault(x => x.GetCustomAttribute<MemberAttribute>() != null && x.GetCustomAttribute<MemberAttribute>().IsPrimaryKey);
 

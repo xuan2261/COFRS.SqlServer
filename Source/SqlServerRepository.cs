@@ -144,20 +144,22 @@ namespace COFRS.SqlServer
 		/// </summary>
 		/// <typeparam name="T">The type of items to retrieve</typeparam>
 		/// <param name="node">The compiled RQL Query</param>
+		/// <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
 		/// <returns></returns>
-		public async Task<RqlCollection<T>> GetCollectionAsync<T>(RqlNode node)
+		public async Task<RqlCollection<T>> GetCollectionAsync<T>(RqlNode node, bool NoPaging)
 		{
-			return await GetCollectionAsync<T>(new List<KeyValuePair<string, object>>(), node);
+			return await GetCollectionAsync<T>(new List<KeyValuePair<string, object>>(), node, NoPaging);
 		}
 
 		/// <summary>
 		/// Gets a collection
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
-		/// <param name="keys"></param>
-		/// <param name="node"></param>
+		/// <param name="keys">The list of keys to further limit the results of the query.</param>
+		/// <param name="node">The compiled RQL Query</param>
+		/// <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
 		/// <returns></returns>
-		public async Task<RqlCollection<T>> GetCollectionAsync<T>(IEnumerable<KeyValuePair<string, object>> keys, RqlNode node)
+		public async Task<RqlCollection<T>> GetCollectionAsync<T>(IEnumerable<KeyValuePair<string, object>> keys, RqlNode node, bool NoPaging)
 		{
 			using var ctc = new CancellationTokenSource();
 			var task = Task.Run(async () =>
@@ -169,38 +171,41 @@ namespace COFRS.SqlServer
 				var translationOptions = ServiceFactory.Get<ITranslationOptions>();
 				var resultList = new List<T>();
 
-				if (pageFilter != null && pageFilter.Value<int>(0) < 1)
+				if (!NoPaging)
 				{
-					pageFilter = new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit });
-				}
-				else
-				{
-					var sqlCount = Emitter.BuildCollectionCountQuery<T>(keys, node, parameters);
-
-					using (LogContext.PushProperty("SQL", sqlCount.ToString()))
+					if (pageFilter != null && pageFilter.Value<int>(0) < 1)
 					{
-						logger.LogTrace($"[REPOSITORY] ReadCollection<{typeof(T).Name}>");
+						pageFilter = new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit });
+					}
+					else
+					{
+						var sqlCount = Emitter.BuildCollectionCountQuery<T>(keys, node, parameters);
 
-						//	We now have an SQL query that needs to be executed in order to get our object.
-						using var command = new SqlCommand(sqlCount, _connection);
-						foreach (var parameter in parameters)
+						using (LogContext.PushProperty("SQL", sqlCount.ToString()))
 						{
-							command.Parameters.Add(parameter);
-						}
+							logger.LogTrace($"[REPOSITORY] ReadCollection<{typeof(T).Name}>");
 
-						using var reader = await command.ExecuteReaderAsync(ctc.Token);
-						if (await reader.ReadAsync())
-						{
-							results.count = await reader.ReadInt32Async("RecordCount", ctc.Token);
+							//	We now have an SQL query that needs to be executed in order to get our object.
+							using var command = new SqlCommand(sqlCount, _connection);
+							foreach (var parameter in parameters)
+							{
+								command.Parameters.Add(parameter);
+							}
+
+							using var reader = await command.ExecuteReaderAsync(ctc.Token);
+							if (await reader.ReadAsync())
+							{
+								results.count = await reader.ReadInt32Async("RecordCount", ctc.Token);
+							}
 						}
 					}
+
+					if (ctc.Token.IsCancellationRequested)
+						return default;
 				}
 
-				if (ctc.Token.IsCancellationRequested)
-					return default;
-
 				parameters.Clear();
-				var sql = Emitter.BuildCollectionListQuery<T>(keys, node, results.count, _options.BatchLimit, pageFilter, parameters);
+				var sql = Emitter.BuildCollectionListQuery<T>(keys, node, results.count, _options.BatchLimit, pageFilter, parameters, NoPaging);
 
 				using (LogContext.PushProperty("SQL", sql.ToString()))
 				{
@@ -373,261 +378,6 @@ namespace COFRS.SqlServer
 				ctc.Cancel();
 				throw new InvalidOperationException("Task exceeded time limit.");
 			}
-		}
-		#endregion
-
-		#region Synchronous Operations
-		/// <summary>
-		/// Synchronously adds a value to the datastore, and returns the newly added value
-		/// with any identity columns filled in
-		/// </summary>
-		/// <typeparam name="T">The type of item to add</typeparam>
-		/// <param name="item">The item to add</param>
-		/// <returns></returns>
-		public T Add<T>(T item)
-		{
-			var parameters = new List<SqlParameter>();
-			var sql = Emitter.BuildAddQuery<T>(item,  
-				                               parameters, 
-											   out PropertyInfo identityProperty);
-
-			using (LogContext.PushProperty("SQL", sql.ToString()))
-				logger.LogTrace($"[REPOSITORY] Add<{typeof(T).Name}>");
-
-			using var command = new SqlCommand(sql, _connection);
-			foreach (var parameter in parameters)
-			{
-				command.Parameters.Add(parameter);
-			}
-
-			if (identityProperty != null)
-			{
-				using var reader = command.ExecuteReader();
-				if (reader.Read())
-				{
-					identityProperty.SetValue(item, reader.GetValue(0));
-					return item;
-				}
-			}
-			else
-			{
-				command.ExecuteNonQuery();
-				return item;
-			}
-
-			throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("unexcpected failure", "insert failed"));
-		}
-
-		/// <summary>
-		/// Deletes an item(s) from the datastore that match the specified keys. If no keys are specified
-		/// all the items of type T will be deleted.
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="keys"></param>
-		public void Delete<T>(IEnumerable<KeyValuePair<string, object>> keys)
-		{
-			var parameters = new List<SqlParameter>();
-			var sql = Emitter.BuildDeleteQuery<T>(keys, parameters);
-
-			using var command = new SqlCommand(sql, _connection);
-			foreach (var parameter in parameters)
-			{
-				command.Parameters.Add(parameter);
-			}
-
-			command.ExecuteNonQuery();
-		}
-
-
-		/// <summary>
-		/// Gets a collection of items of type T from the repository as a RqlCollection
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="node"></param>
-		/// <returns></returns>
-		public RqlCollection<T> GetCollection<T>(RqlNode node)
-		{
-			return GetCollection<T>(new List<KeyValuePair<string,object>>(), node);
-		}
-
-		/// <summary>
-		/// Gets a collection
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="keyList"></param>
-		/// <param name="node"></param>
-		/// <returns></returns>
-		public RqlCollection<T> GetCollection<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node)
-		{
-			var parameters = new List<SqlParameter>();
-			var results = new RqlCollection<T>();
-			var pageFilter = RqlUtilities.ExtractClause(RqlNodeType.LIMIT, node);
-			var options = ServiceFactory.Get<IRepositoryOptions>();
-			var translationOptions = ServiceFactory.Get<ITranslationOptions>();
-
-			if (pageFilter != null && pageFilter.Value<int>(0) < 1)
-			{
-				pageFilter = new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit });
-			}
-			else
-			{
-				var sqlCount = Emitter.BuildCollectionCountQuery<T>(keyList, node, parameters);
-
-				using (LogContext.PushProperty("SQL", sqlCount.ToString()))
-				{
-					logger.LogTrace($"[REPOSITORY] ReadSingle<{typeof(T).Name}>");
-
-					var resultList = new List<T>();
-
-					//	We now have an SQL query that needs to be executed in order to get our object.
-					using var command = new SqlCommand(sqlCount, _connection);
-					foreach (var parameter in parameters)
-					{
-						command.Parameters.Add(parameter);
-					}
-
-					using var reader = command.ExecuteReader();
-					if (reader.Read())
-					{
-						results.count = reader.ReadInt32("RecordCount");
-					}
-				}
-			}
-
-			parameters.Clear();
-			var sql = Emitter.BuildCollectionListQuery<T>(keyList, node, results.count, _options.BatchLimit, pageFilter, parameters);
-
-			using (LogContext.PushProperty("SQL", sql.ToString()))
-			{
-				logger.LogTrace($"[REPOSITORY] ReadSingle<{typeof(T).Name}>");
-				var resultList = new List<T>();
-
-				//	We now have an SQL query that needs to be executed in order to get our object.
-				using (var command = new SqlCommand(sql, _connection))
-				{
-					foreach (var parameter in parameters)
-					{
-						command.Parameters.Add(parameter);
-					}
-
-					using var reader = command.ExecuteReader();
-					while (reader.Read())
-					{
-						resultList.Add(reader.Read<T>(node));
-					}
-
-					results.items = resultList.ToArray();
-
-					if (results.count == 0)
-						results.count = resultList.Count;
-				}
-
-				if (pageFilter == null)
-				{
-					pageFilter = new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit });
-				}
-				else if (pageFilter.Value<int>(1) > options.BatchLimit)
-				{
-					pageFilter.SetValue<int>(1, options.BatchLimit);
-				}
-
-				var start = pageFilter.Value<int>(0);
-				var batchSize = pageFilter.Value<int>(1);
-
-				if (results.count <= batchSize)
-					results.limit = null;
-				else
-					results.limit = resultList.Count;
-
-				var refNode = node;
-
-				if (refNode == null)
-					refNode = new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit });
-
-				if (RqlUtilities.ExtractClause(RqlNodeType.LIMIT, refNode) == null)
-					refNode = new RqlNode(RqlNodeType.AND, new List<RqlNode> { new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit }), refNode });
-
-				var hrefNode = RqlUtilities.ReplaceClause(RqlNodeType.LIMIT, refNode, new RqlNode(RqlNodeType.LIMIT, new List<int> { start, batchSize }));
-				results.href = new Uri(translationOptions.RootUrl, $"collection?{hrefNode.ToString()}");
-
-				if (start > 1)
-				{
-					var newStart = start - batchSize;
-					if (newStart < 1)
-						newStart = 1;
-
-					var firstNode = RqlUtilities.ReplaceClause(RqlNodeType.LIMIT, refNode, new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, batchSize }));
-					results.first = new Uri(translationOptions.RootUrl, $"collection?{firstNode.ToString()}");
-
-					var prevNode = RqlUtilities.ReplaceClause(RqlNodeType.LIMIT, refNode, new RqlNode(RqlNodeType.LIMIT, new List<int> { newStart, batchSize }));
-					results.previous = new Uri(translationOptions.RootUrl, $"collection?{prevNode.ToString()}");
-				}
-
-				if (results.count >= pageFilter.Value<int>(0) + pageFilter.Value<int>(1))
-				{
-					var nextNode = RqlUtilities.ReplaceClause(RqlNodeType.LIMIT, refNode, new RqlNode(RqlNodeType.LIMIT, new List<int> { start + batchSize, batchSize }));
-					results.next = new Uri(translationOptions.RootUrl, $"collection?{nextNode.ToString()}");
-				}
-
-				return results;
-			}
-		}
-
-		/// <summary>
-		/// Get a single object of type T by a set of key values
-		/// </summary>
-		/// <typeparam name="T">The type of object to return</typeparam>
-		/// <param name="keyList">The list of keys and their values used to uniquely identify the object</param>
-		/// <param name="node">The compiled form of the RQL query</param>
-		/// <returns></returns>
-		public T GetSingle<T>(IEnumerable<KeyValuePair<string,object>> keyList, RqlNode node)
-		{
-			var parameters = new List<SqlParameter>();
-			var sql = Emitter.BuildSingleQuery<T>(keyList, node, parameters);
-
-			using (LogContext.PushProperty("SQL", sql.ToString()))
-				logger.LogTrace($"[REPOSITORY] ReadSingle<{typeof(T).Name}>");
-
-			//	We now have an SQL query that needs to be executed in order to get our object.
-			using (var command = new SqlCommand(sql, _connection))
-			{
-				foreach (var parameter in parameters)
-				{
-					command.Parameters.Add(parameter);
-				}
-
-				using var reader = command.ExecuteReader();
-				if (reader.Read())
-				{
-					//	Read the object (of type T) from the database.
-					//	This will create a new object of type T populated with data from the database.
-					return reader.Read<T>(node);
-				}
-			}
-
-			return default;
-		}
-
-		/// <summary>
-		/// Updates an item in the datastore
-		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="item"></param>
-		public void Update<T>(T item)
-		{
-			var parameters = new List<SqlParameter>();
-			var sql = Emitter.BuildUpdateQuery<T>(item, parameters);
-
-			using (LogContext.PushProperty("SQL", sql.ToString()))
-				logger.LogTrace($"[REPOSITORY] Update<{typeof(T).Name}>");
-
-			using var command = new SqlCommand(sql, _connection);
-			foreach (var parameter in parameters)
-			{
-				command.Parameters.Add(parameter);
-			}
-
-			command.ExecuteNonQuery();
 		}
 		#endregion
 
