@@ -13,27 +13,27 @@
             <summary>
             Updates an item in the datastore
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="item"></param>
-            <param name="parameters"></param>
+            <typeparam name="T">The type of item to update</typeparam>
+            <param name="item">The item to update</param>
+            <param name="parameters">The list of SQL Parameters needed to execute the SQL statement</param>
             <returns></returns>
         </member>
         <member name="M:COFRS.SqlServer.Emitter.BuildDeleteQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Builds a query to delete an object from the datastore using the specfied keys
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="keys"></param>
-            <param name="parameters"></param>
+            <typeparam name="T">The type of item to delete</typeparam>
+            <param name="keys">The list of keys used to identify the items to be deleted</param>
+            <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
             <returns></returns>
         </member>
         <member name="M:COFRS.SqlServer.Emitter.BuildAddQuery``1(``0,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.Reflection.PropertyInfo@)">
             <summary>
-            Build the SQL query to add an item to the datastore
+            Builds the SQL query to add an item to the datastore
             </summary>
-            <typeparam name="T"></typeparam>
-            <param name="item"></param>
-            <param name="parameters"></param>
+            <typeparam name="T">The type of item to be added</typeparam>
+            <param name="item">The item to be added</param>
+            <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
             <param name="identityProperty"></param>
             <returns></returns>
         </member>
@@ -44,7 +44,7 @@
             <typeparam name="T"></typeparam>
             <param name="keyList"></param>
             <param name="node"></param>
-            <param name="parameters">The list of parameters for this query</param>
+            <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
             <returns></returns>
         </member>
         <member name="M:COFRS.SqlServer.Emitter.BuildCollectionCountQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
@@ -56,16 +56,17 @@
             <param name="parameters"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.SqlServer.Emitter.BuildCollectionListQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Int32,System.Int32,COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
+        <member name="M:COFRS.SqlServer.Emitter.BuildCollectionListQuery``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Int32,System.Int32,COFRS.Rql.RqlNode,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.Boolean)">
             <summary>
-            Builds the count query for the collection
+            Builds the SQL query for the collection
             </summary>
             <param name="keyList">The list of key value pairs that limit the scope of the collection</param>
             <param name="node">The compiled RQL query</param>
             <param name="count">The number of records in the collection</param>
             <param name="batchLimit">The maximum number of items that can be included in a collection batch</param>
             <param name="pageFilter">The page filter that applies to the collection</param>
-            <param name="parameters">Returns the list of parameters that need to be bound to the SQL statement</param>
+            <param name="parameters">The parameters for the SQL query</param>
+            <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
             <returns></returns>
         </member>
         <member name="M:COFRS.SqlServer.Emitter.AddJoinConditions``1(System.Text.StringBuilder,COFRS.Table,COFRS.Join,System.Collections.Generic.IEnumerable{COFRS.JoinCondition},System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
@@ -1093,21 +1094,23 @@
             <typeparam name="T">The type of item to delete</typeparam>
             <param name="keys">The keys that defined the item to be deleted</param>
         </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollectionAsync``1(COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollectionAsync``1(COFRS.Rql.RqlNode,System.Boolean)">
             <summary>
             Gets a collection
             </summary>
             <typeparam name="T">The type of items to retrieve</typeparam>
             <param name="node">The compiled RQL Query</param>
+            <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollectionAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollectionAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode,System.Boolean)">
             <summary>
             Gets a collection
             </summary>
             <typeparam name="T"></typeparam>
-            <param name="keys"></param>
-            <param name="node"></param>
+            <param name="keys">The list of keys to further limit the results of the query.</param>
+            <param name="node">The compiled RQL Query</param>
+            <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
             <returns></returns>
         </member>
         <member name="M:COFRS.SqlServer.SqlServerRepository.GetSingleAsync``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
@@ -1126,56 +1129,6 @@
             <typeparam name="T"></typeparam>
             <param name="item"></param>
             <returns></returns>
-        </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.Add``1(``0)">
-            <summary>
-            Synchronously adds a value to the datastore, and returns the newly added value
-            with any identity columns filled in
-            </summary>
-            <typeparam name="T">The type of item to add</typeparam>
-            <param name="item">The item to add</param>
-            <returns></returns>
-        </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.Delete``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
-            <summary>
-            Deletes an item(s) from the datastore that match the specified keys. If no keys are specified
-            all the items of type T will be deleted.
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="keys"></param>
-        </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollection``1(COFRS.Rql.RqlNode)">
-            <summary>
-            Gets a collection of items of type T from the repository as a RqlCollection
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="node"></param>
-            <returns></returns>
-        </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.GetCollection``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
-            <summary>
-            Gets a collection
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="keyList"></param>
-            <param name="node"></param>
-            <returns></returns>
-        </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.GetSingle``1(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},COFRS.Rql.RqlNode)">
-            <summary>
-            Get a single object of type T by a set of key values
-            </summary>
-            <typeparam name="T">The type of object to return</typeparam>
-            <param name="keyList">The list of keys and their values used to uniquely identify the object</param>
-            <param name="node">The compiled form of the RQL query</param>
-            <returns></returns>
-        </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.Update``1(``0)">
-            <summary>
-            Updates an item in the datastore
-            </summary>
-            <typeparam name="T"></typeparam>
-            <param name="item"></param>
         </member>
         <member name="M:COFRS.SqlServer.SqlServerRepository.Dispose(System.Boolean)">
             <summary>

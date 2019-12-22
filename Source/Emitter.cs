@@ -18,9 +18,9 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Updates an item in the datastore
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="item"></param>
-		/// <param name="parameters"></param>
+		/// <typeparam name="T">The type of item to update</typeparam>
+		/// <param name="item">The item to update</param>
+		/// <param name="parameters">The list of SQL Parameters needed to execute the SQL statement</param>
 		/// <returns></returns>
 		public static string BuildUpdateQuery<T>(T item, List<SqlParameter> parameters)
 		{
@@ -100,9 +100,9 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Builds a query to delete an object from the datastore using the specfied keys
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="keys"></param>
-		/// <param name="parameters"></param>
+		/// <typeparam name="T">The type of item to delete</typeparam>
+		/// <param name="keys">The list of keys used to identify the items to be deleted</param>
+		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
 		/// <returns></returns>
 		public static string BuildDeleteQuery<T>(IEnumerable<KeyValuePair<string, object>> keys, List<SqlParameter> parameters)
 		{
@@ -159,11 +159,11 @@ namespace COFRS.SqlServer
 		}
 
 		/// <summary>
-		/// Build the SQL query to add an item to the datastore
+		/// Builds the SQL query to add an item to the datastore
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="item"></param>
-		/// <param name="parameters"></param>
+		/// <typeparam name="T">The type of item to be added</typeparam>
+		/// <param name="item">The item to be added</param>
+		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
 		/// <param name="identityProperty"></param>
 		/// <returns></returns>
 		public static string BuildAddQuery<T>(T item, List<SqlParameter> parameters, out PropertyInfo identityProperty)
@@ -289,7 +289,7 @@ namespace COFRS.SqlServer
 		/// <typeparam name="T"></typeparam>
 		/// <param name="keyList"></param>
 		/// <param name="node"></param>
-		/// <param name="parameters">The list of parameters for this query</param>
+		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
 		/// <returns></returns>
 		public static string BuildSingleQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters)
 		{
@@ -521,7 +521,6 @@ namespace COFRS.SqlServer
 
 			return sql.ToString();
 		}
-
 
 		#region Helper Functions
 		/// <summary>

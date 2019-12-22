@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1;netcoreapp2.2;netcoreapp3.0;netcoreapp3.1</TargetFrameworks>
     <Copyright>(C) 2020, Michael Zuniga</Copyright>
     <Authors>Michael Zuniga</Authors>
     <Company>Village West Consulting</Company>
     <Description>A library to aid in the construction of RESTful Web Services</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/mzuniga58/COFRS.SqlServer</RepositoryUrl>
-    <Version>1.1.6-alpha</Version>
+    <Version>1.1.7-alpha</Version>
     <PackageReleaseNotes>Pre-release. DO NOT USE.</PackageReleaseNotes>
     <PackageId>COFRS.SqlServer</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -18,14 +18,6 @@
     <Title>COFRS.SqlServer</Title>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
-  
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.1' ">
-    <DefineConstants>NETCORE21</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.2' ">
-    <DefineConstants>NETCORE22</DefineConstants>
-  </PropertyGroup>
 
   <PropertyGroup>
     <LangVersion>preview</LangVersion>
@@ -34,24 +26,15 @@
     <PackageIconUrl>https://github.com/mzuniga58/COFRS.SqlServer/tree/master/Source/COFRS.ico</PackageIconUrl>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-    <DocumentationFile>.\COFRS.SqlServer.xml</DocumentationFile>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningsAsErrors />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+  <PropertyGroup>
     <DocumentationFile>.\COFRS.SqlServer.xml</DocumentationFile>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="COFRS" Version="1.1.6-alpha" />
+    <PackageReference Include="COFRS" Version="1.1.7-alpha" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
   </ItemGroup>
 
   <ItemGroup>
