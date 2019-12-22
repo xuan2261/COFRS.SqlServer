@@ -33,10 +33,15 @@ namespace COFRS.SqlServer
 		protected SqlConnection _connection;
 
 		/// <summary>
+		/// The Service Provider
+		/// </summary>
+		protected IServiceProvider ServiceProvider;
+
+		/// <summary>
 		/// Initializes a repository with the specified options
 		/// </summary>
-		/// <param name="options"></param>
-		public SqlServerRepository(IRepositoryOptions options)
+		/// <param name="serviceProvider"></param>
+		public SqlServerRepository(IServiceProvider serviceProvider)
 		{
 			try
 			{
@@ -45,13 +50,14 @@ namespace COFRS.SqlServer
 					logger = factory.CreateLogger("ApiRepository");
 				}
 
-				_options = options;
-				_connection = new SqlConnection(options.ConnectionString);
+				ServiceProvider = serviceProvider;
+				_options = (IRepositoryOptions) ServiceProvider.GetService(typeof(IRepositoryOptions));
+				_connection = new SqlConnection(_options.ConnectionString);
 				_connection.Open();
 			}
 			catch (Exception error)
 			{
-				throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("connection_error", $"Cannot open database connection to {options.ConnectionString}."), error);
+				throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("connection_error", $"Cannot open database connection to {_options.ConnectionString}."), error);
 			}
 		}
 
@@ -68,8 +74,9 @@ namespace COFRS.SqlServer
 			var task = Task.Run(async () =>
 			{
 				var parameters = new List<SqlParameter>();
+				var emitter = new Emitter(ServiceProvider);
 
-				var sql = Emitter.BuildAddQuery(item,
+				var sql = emitter.BuildAddQuery(item,
 				parameters,
 				out PropertyInfo identityProperty);
 
@@ -121,7 +128,9 @@ namespace COFRS.SqlServer
 			var task = Task.Run(async () =>
 			{
 				var parameters = new List<SqlParameter>();
-				var sql = Emitter.BuildDeleteQuery<T>(keys, parameters);
+				var emitter = new Emitter(ServiceProvider);
+
+				var sql = emitter.BuildDeleteQuery<T>(keys, parameters);
 
 				using var command = new SqlCommand(sql, _connection);
 				foreach (var parameter in parameters)
@@ -167,9 +176,10 @@ namespace COFRS.SqlServer
 				var parameters = new List<SqlParameter>();
 				var results = new RqlCollection<T>();
 				var pageFilter = RqlUtilities.ExtractClause(RqlNodeType.LIMIT, node);
-				var options = ServiceFactory.Get<IRepositoryOptions>();
-				var translationOptions = ServiceFactory.Get<ITranslationOptions>();
+				var options = (IRepositoryOptions) ServiceProvider.GetService(typeof(IRepositoryOptions));
+				var translationOptions = (ITranslationOptions)ServiceProvider.GetService(typeof(ITranslationOptions));
 				var resultList = new List<T>();
+				var emitter = new Emitter(ServiceProvider);
 
 				if (!NoPaging)
 				{
@@ -179,7 +189,7 @@ namespace COFRS.SqlServer
 					}
 					else
 					{
-						var sqlCount = Emitter.BuildCollectionCountQuery<T>(keys, node, parameters);
+						var sqlCount = emitter.BuildCollectionCountQuery<T>(keys, node, parameters);
 
 						using (LogContext.PushProperty("SQL", sqlCount.ToString()))
 						{
@@ -205,7 +215,7 @@ namespace COFRS.SqlServer
 				}
 
 				parameters.Clear();
-				var sql = Emitter.BuildCollectionListQuery<T>(keys, node, results.count, _options.BatchLimit, pageFilter, parameters, NoPaging);
+				var sql = emitter.BuildCollectionListQuery<T>(keys, node, results.count, _options.BatchLimit, pageFilter, parameters, NoPaging);
 
 				using (LogContext.PushProperty("SQL", sql.ToString()))
 				{
@@ -313,7 +323,8 @@ namespace COFRS.SqlServer
 			var task = Task.Run(async () =>
 			{
 				var parameters = new List<SqlParameter>();
-				var sql = Emitter.BuildSingleQuery<T>(keys, node, parameters);
+				var emitter = new Emitter(ServiceProvider);
+				var sql = emitter.BuildSingleQuery<T>(keys, node, parameters);
 
 				using (LogContext.PushProperty("SQL", sql.ToString()))
 					logger.LogDebug($"[REPOSITORY] ReadSingle<{typeof(T).Name}>");
@@ -359,7 +370,8 @@ namespace COFRS.SqlServer
 			var task = Task.Run(async () =>
 			{
 				var parameters = new List<SqlParameter>();
-				var sql = Emitter.BuildUpdateQuery(item, parameters);
+				var emitter = new Emitter(ServiceProvider);
+				var sql = emitter.BuildUpdateQuery(item, parameters);
 
 				using (LogContext.PushProperty("SQL", sql.ToString()))
 					logger.LogTrace($"[REPOSITORY] Update<{typeof(T).Name}>");

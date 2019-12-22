@@ -13,8 +13,19 @@ namespace COFRS.SqlServer
 	/// <summary>
 	/// Emitter class - returns the generated SQL statement
 	/// </summary>
-	public static class Emitter
+	public class Emitter
 	{
+		private readonly IServiceProvider ServiceProvider;
+
+		/// <summary>
+		/// Emitter
+		/// </summary>
+		/// <param name="serviceProvider"></param>
+		public Emitter(IServiceProvider serviceProvider)
+		{
+			ServiceProvider = serviceProvider;
+		}
+
 		/// <summary>
 		/// Updates an item in the datastore
 		/// </summary>
@@ -22,7 +33,7 @@ namespace COFRS.SqlServer
 		/// <param name="item">The item to update</param>
 		/// <param name="parameters">The list of SQL Parameters needed to execute the SQL statement</param>
 		/// <returns></returns>
-		public static string BuildUpdateQuery<T>(T item, List<SqlParameter> parameters)
+		public string BuildUpdateQuery<T>(T item, List<SqlParameter> parameters)
 		{
 			var properties = typeof(T).GetProperties();
 			var tableAttribute = typeof(T).GetCustomAttribute<Table>();
@@ -104,7 +115,7 @@ namespace COFRS.SqlServer
 		/// <param name="keys">The list of keys used to identify the items to be deleted</param>
 		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
 		/// <returns></returns>
-		public static string BuildDeleteQuery<T>(IEnumerable<KeyValuePair<string, object>> keys, List<SqlParameter> parameters)
+		public string BuildDeleteQuery<T>(IEnumerable<KeyValuePair<string, object>> keys, List<SqlParameter> parameters)
 		{
 			var properties = typeof(T).GetProperties();
 			var tableAttribute = typeof(T).GetCustomAttribute<Table>();
@@ -166,7 +177,7 @@ namespace COFRS.SqlServer
 		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
 		/// <param name="identityProperty"></param>
 		/// <returns></returns>
-		public static string BuildAddQuery<T>(T item, List<SqlParameter> parameters, out PropertyInfo identityProperty)
+		public string BuildAddQuery<T>(T item, List<SqlParameter> parameters, out PropertyInfo identityProperty)
 		{
 			var sql = new StringBuilder();
 			var properties = typeof(T).GetProperties();
@@ -291,7 +302,7 @@ namespace COFRS.SqlServer
 		/// <param name="node"></param>
 		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
 		/// <returns></returns>
-		public static string BuildSingleQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters)
+		public string BuildSingleQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters)
 		{
 			var sql = new StringBuilder();
 			var whereClause = ParseWhereClause<T>(node, null, parameters);
@@ -530,7 +541,7 @@ namespace COFRS.SqlServer
 		/// <param name="node"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		internal static string BuildCollectionCountQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters)
+		internal string BuildCollectionCountQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters)
 		{
 			var sql = new StringBuilder();
 			var whereClause = ParseWhereClause<T>(node, null, parameters);
@@ -652,13 +663,13 @@ namespace COFRS.SqlServer
 		/// <param name="parameters">The parameters for the SQL query</param>
 		/// <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
 		/// <returns></returns>
-		internal static string BuildCollectionListQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, int count, int batchLimit, RqlNode pageFilter, List<SqlParameter> parameters, bool NoPaging)
+		internal string BuildCollectionListQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, int count, int batchLimit, RqlNode pageFilter, List<SqlParameter> parameters, bool NoPaging)
 		{
 			var sql = new StringBuilder();
 			var whereClause = ParseWhereClause<T>(node, null, parameters);
 			var orderByClause = ParseOrderByClause<T>(node);
 			var selectFields = RqlUtilities.ExtractClause(RqlNodeType.SELECT, node);
-			var options = ServiceFactory.Get<IRepositoryOptions>();
+			var options = (IRepositoryOptions)ServiceProvider.GetService(typeof(IRepositoryOptions));
 
 			var properties = typeof(T).GetProperties();
 			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
@@ -1121,7 +1132,7 @@ namespace COFRS.SqlServer
 		/// <param name="joinAttribute"></param>
 		/// <param name="currentJoinConditons"></param>
 		/// <param name="parameters"></param>
-		private static void AddJoinConditions<T>(StringBuilder sql, Table tableAttribute, Join joinAttribute, IEnumerable<JoinCondition> currentJoinConditons, List<SqlParameter> parameters)
+		private void AddJoinConditions<T>(StringBuilder sql, Table tableAttribute, Join joinAttribute, IEnumerable<JoinCondition> currentJoinConditons, List<SqlParameter> parameters)
 		{
 			bool first = true;
 
@@ -1260,7 +1271,7 @@ namespace COFRS.SqlServer
 		/// <param name="op"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		private static string ParseWhereClause<T>(RqlNode node, string op, List<SqlParameter> parameters)
+		private string ParseWhereClause<T>(RqlNode node, string op, List<SqlParameter> parameters)
 		{
 			var whereClause = new StringBuilder();
 			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
@@ -1517,7 +1528,7 @@ namespace COFRS.SqlServer
 			return whereClause.ToString();
 		}
 
-		private static string ConstructComparrisonOperator<T>(string operation, string attributeName, object attributeValue, List<SqlParameter> parameters)
+		private string ConstructComparrisonOperator<T>(string operation, string attributeName, object attributeValue, List<SqlParameter> parameters)
 		{
 			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
 			var property = typeof(T).GetProperties().FirstOrDefault(x => x.Name.ToLower() == attributeName.ToLower());
@@ -1584,7 +1595,7 @@ namespace COFRS.SqlServer
 		/// <typeparam name="T">The type of object from which the fields are being selected</typeparam>
 		/// <param name="node">The RQL node representation of the query string</param>
 		/// <returns></returns>
-		private static string ParseOrderByClause<T>(RqlNode node)
+		private string ParseOrderByClause<T>(RqlNode node)
 		{
 			var orderByClause = new StringBuilder();
 			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
@@ -1676,13 +1687,13 @@ namespace COFRS.SqlServer
 			return orderByClause.ToString();
 		}
 
-		private static PropertyInfo GetProperty<T>(string name)
+		private PropertyInfo GetProperty<T>(string name)
 		{
 			var properties = typeof(T).GetProperties();
 			return properties.FirstOrDefault(x => string.Compare(x.Name, name, true) == 0);
 		}
 
-		internal static SqlParameter BuildSqlParameter(string parameterName, PropertyInfo property, object value)
+		internal SqlParameter BuildSqlParameter(string parameterName, PropertyInfo property, object value)
 		{
 			//	Is the property a string property?
 			if (property.PropertyType == typeof(string))

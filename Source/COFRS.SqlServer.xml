@@ -9,6 +9,12 @@
             Emitter class - returns the generated SQL statement
             </summary>
         </member>
+        <member name="M:COFRS.SqlServer.Emitter.#ctor(System.IServiceProvider)">
+            <summary>
+            Emitter
+            </summary>
+            <param name="serviceProvider"></param>
+        </member>
         <member name="M:COFRS.SqlServer.Emitter.BuildUpdateQuery``1(``0,System.Collections.Generic.List{System.Data.SqlClient.SqlParameter})">
             <summary>
             Updates an item in the datastore
@@ -1072,11 +1078,16 @@
             The SQL Connection used to interact with the database
             </summary>
         </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.#ctor(COFRS.IRepositoryOptions)">
+        <member name="F:COFRS.SqlServer.SqlServerRepository.ServiceProvider">
+            <summary>
+            The Service Provider
+            </summary>
+        </member>
+        <member name="M:COFRS.SqlServer.SqlServerRepository.#ctor(System.IServiceProvider)">
             <summary>
             Initializes a repository with the specified options
             </summary>
-            <param name="options"></param>
+            <param name="serviceProvider"></param>
         </member>
         <member name="M:COFRS.SqlServer.SqlServerRepository.AddAsync``1(``0)">
             <summary>
