@@ -1950,59 +1950,25 @@ namespace COFRS.SqlServer
 				{
 					//	Read the value of the property from the database based on its type.
 					//	And then set the value in the object.
-					switch (Type.GetTypeCode(propertyType))
+					return (Type.GetTypeCode(propertyType)) switch
 					{
-						case TypeCode.Boolean:
-							return reader.ReadBoolean(property.Name);
-
-						case TypeCode.Byte:
-							return reader.ReadByte(property.Name);
-
-						case TypeCode.Char:
-							return reader.ReadChar(property.Name);
-
-						case TypeCode.DateTime:
-							return reader.ReadDateTime(property.Name);
-
-						case TypeCode.Decimal:
-							return reader.ReadDecimal(property.Name);
-
-						case TypeCode.Double:
-							return reader.ReadDouble(property.Name);
-
-						case TypeCode.Single:
-							return reader.ReadSingle(property.Name);
-
-						case TypeCode.Int16:
-							return reader.ReadInt16(property.Name);
-
-						case TypeCode.Int32:
-							return reader.ReadInt32(property.Name);
-
-						case TypeCode.Int64:
-							return reader.ReadInt64(property.Name);
-
-						case TypeCode.SByte:
-							return reader.ReadSByte(property.Name);
-
-						case TypeCode.String:
-							return reader.ReadString(property.Name);
-
-						case TypeCode.UInt16:
-							return reader.ReadUInt16(property.Name);
-
-						case TypeCode.UInt32:
-							return reader.ReadUInt32(property.Name);
-
-						case TypeCode.UInt64:
-							return reader.ReadUInt64(property.Name);
-
-						case TypeCode.DBNull:
-						case TypeCode.Empty:
-						case TypeCode.Object:
-						default:
-							throw new InvalidCastException("Unrecognized data type");
-					}
+						TypeCode.Boolean => reader.ReadBoolean(property.Name),
+						TypeCode.Byte => reader.ReadByte(property.Name),
+						TypeCode.Char => reader.ReadChar(property.Name),
+						TypeCode.DateTime => reader.ReadDateTime(property.Name),
+						TypeCode.Decimal => reader.ReadDecimal(property.Name),
+						TypeCode.Double => reader.ReadDouble(property.Name),
+						TypeCode.Single => reader.ReadSingle(property.Name),
+						TypeCode.Int16 => reader.ReadInt16(property.Name),
+						TypeCode.Int32 => reader.ReadInt32(property.Name),
+						TypeCode.Int64 => reader.ReadInt64(property.Name),
+						TypeCode.SByte => reader.ReadSByte(property.Name),
+						TypeCode.String => reader.ReadString(property.Name),
+						TypeCode.UInt16 => reader.ReadUInt16(property.Name),
+						TypeCode.UInt32 => reader.ReadUInt32(property.Name),
+						TypeCode.UInt64 => reader.ReadUInt64(property.Name),
+						_ => throw new InvalidCastException("Unrecognized data type"),
+					};
 				}
 			}
 		}
@@ -2192,59 +2158,25 @@ namespace COFRS.SqlServer
 				{
 					//	Read the value of the property from the database based on its type.
 					//	And then set the value in the object.
-					switch (Type.GetTypeCode(propertyType))
+					return (Type.GetTypeCode(propertyType)) switch
 					{
-						case TypeCode.Boolean:
-							return await reader.ReadBooleanAsync(property.Name);
-
-						case TypeCode.Byte:
-							return await reader.ReadByteAsync(property.Name);
-
-						case TypeCode.Char:
-							return await reader.ReadCharAsync(property.Name);
-
-						case TypeCode.DateTime:
-							return await reader.ReadDateTimeAsync(property.Name);
-
-						case TypeCode.Decimal:
-							return await reader.ReadDecimalAsync(property.Name);
-
-						case TypeCode.Double:
-							return await reader.ReadDoubleAsync(property.Name);
-
-						case TypeCode.Single:
-							return await reader.ReadSingleAsync(property.Name);
-
-						case TypeCode.Int16:
-							return await reader.ReadInt16Async(property.Name);
-
-						case TypeCode.Int32:
-							return await reader.ReadInt32Async(property.Name);
-
-						case TypeCode.Int64:
-							return await reader.ReadInt64Async(property.Name);
-
-						case TypeCode.SByte:
-							return await reader.ReadSByteAsync(property.Name);
-
-						case TypeCode.String:
-							return await reader.ReadStringAsync(property.Name);
-
-						case TypeCode.UInt16:
-							return await reader.ReadUInt16Async(property.Name);
-
-						case TypeCode.UInt32:
-							return await reader.ReadUInt32Async(property.Name);
-
-						case TypeCode.UInt64:
-							return await reader.ReadUInt64Async(property.Name);
-
-						case TypeCode.DBNull:
-						case TypeCode.Empty:
-						case TypeCode.Object:
-						default:
-							throw new InvalidCastException("Unrecognized data type");
-					}
+						TypeCode.Boolean => await reader.ReadBooleanAsync(property.Name),
+						TypeCode.Byte => await reader.ReadByteAsync(property.Name),
+						TypeCode.Char => await reader.ReadCharAsync(property.Name),
+						TypeCode.DateTime => await reader.ReadDateTimeAsync(property.Name),
+						TypeCode.Decimal => await reader.ReadDecimalAsync(property.Name),
+						TypeCode.Double => await reader.ReadDoubleAsync(property.Name),
+						TypeCode.Single => await reader.ReadSingleAsync(property.Name),
+						TypeCode.Int16 => await reader.ReadInt16Async(property.Name),
+						TypeCode.Int32 => await reader.ReadInt32Async(property.Name),
+						TypeCode.Int64 => await reader.ReadInt64Async(property.Name),
+						TypeCode.SByte => await reader.ReadSByteAsync(property.Name),
+						TypeCode.String => await reader.ReadStringAsync(property.Name),
+						TypeCode.UInt16 => await reader.ReadUInt16Async(property.Name),
+						TypeCode.UInt32 => await reader.ReadUInt32Async(property.Name),
+						TypeCode.UInt64 => await reader.ReadUInt64Async(property.Name),
+						_ => throw new InvalidCastException("Unrecognized data type"),
+					};
 				}
 			}
 		}
@@ -2435,59 +2367,25 @@ namespace COFRS.SqlServer
 				{
 					//	Read the value of the property from the database based on its type.
 					//	And then set the value in the object.
-					switch (Type.GetTypeCode(propertyType))
+					return (Type.GetTypeCode(propertyType)) switch
 					{
-						case TypeCode.Boolean:
-							return await reader.ReadBooleanAsync(property.Name, token);
-
-						case TypeCode.Byte:
-							return await reader.ReadByteAsync(property.Name, token);
-
-						case TypeCode.Char:
-							return await reader.ReadCharAsync(property.Name, token);
-
-						case TypeCode.DateTime:
-							return await reader.ReadDateTimeAsync(property.Name, token);
-
-						case TypeCode.Decimal:
-							return await reader.ReadDecimalAsync(property.Name, token);
-
-						case TypeCode.Double:
-							return await reader.ReadDoubleAsync(property.Name, token);
-
-						case TypeCode.Single:
-							return await reader.ReadSingleAsync(property.Name, token);
-
-						case TypeCode.Int16:
-							return await reader.ReadInt16Async(property.Name, token);
-
-						case TypeCode.Int32:
-							return await reader.ReadInt32Async(property.Name, token);
-
-						case TypeCode.Int64:
-							return await reader.ReadInt64Async(property.Name, token);
-
-						case TypeCode.SByte:
-							return await reader.ReadSByteAsync(property.Name, token);
-
-						case TypeCode.String:
-							return await reader.ReadStringAsync(property.Name, token);
-
-						case TypeCode.UInt16:
-							return await reader.ReadUInt16Async(property.Name, token);
-
-						case TypeCode.UInt32:
-							return await reader.ReadUInt32Async(property.Name, token);
-
-						case TypeCode.UInt64:
-							return await reader.ReadUInt64Async(property.Name, token);
-
-						case TypeCode.DBNull:
-						case TypeCode.Empty:
-						case TypeCode.Object:
-						default:
-							throw new InvalidCastException("Unrecognized data type");
-					}
+						TypeCode.Boolean => await reader.ReadBooleanAsync(property.Name, token),
+						TypeCode.Byte => await reader.ReadByteAsync(property.Name, token),
+						TypeCode.Char => await reader.ReadCharAsync(property.Name, token),
+						TypeCode.DateTime => await reader.ReadDateTimeAsync(property.Name, token),
+						TypeCode.Decimal => await reader.ReadDecimalAsync(property.Name, token),
+						TypeCode.Double => await reader.ReadDoubleAsync(property.Name, token),
+						TypeCode.Single => await reader.ReadSingleAsync(property.Name, token),
+						TypeCode.Int16 => await reader.ReadInt16Async(property.Name, token),
+						TypeCode.Int32 => await reader.ReadInt32Async(property.Name, token),
+						TypeCode.Int64 => await reader.ReadInt64Async(property.Name, token),
+						TypeCode.SByte => await reader.ReadSByteAsync(property.Name, token),
+						TypeCode.String => await reader.ReadStringAsync(property.Name, token),
+						TypeCode.UInt16 => await reader.ReadUInt16Async(property.Name, token),
+						TypeCode.UInt32 => await reader.ReadUInt32Async(property.Name, token),
+						TypeCode.UInt64 => await reader.ReadUInt64Async(property.Name, token),
+						_ => throw new InvalidCastException("Unrecognized data type"),
+					};
 				}
 			}
 		}
