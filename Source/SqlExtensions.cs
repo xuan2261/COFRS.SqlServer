@@ -1768,10 +1768,9 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Read the property
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
 		/// <param name="reader"></param>
 		/// <param name="property"></param>
-		public static object ReadProperty<T>(this SqlDataReader reader, PropertyInfo property)
+		public static object ReadProperty(this SqlDataReader reader, PropertyInfo property)
 		{
 			var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 			var propertyType = property.PropertyType;
@@ -1976,10 +1975,9 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Read the property
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
 		/// <param name="reader"></param>
 		/// <param name="property"></param>
-		public static async Task<object> ReadPropertyAsync<T>(this SqlDataReader reader, PropertyInfo property)
+		public static async Task<object> ReadPropertyAsync(this SqlDataReader reader, PropertyInfo property)
 		{
 			var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 			var propertyType = property.PropertyType;
@@ -2184,11 +2182,10 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Read the property
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
 		/// <param name="reader"></param>
 		/// <param name="property"></param>
 		/// <param name="token">The Cancellation token</param>
-		public static async Task<object> ReadPropertyAsync<T>(this SqlDataReader reader, PropertyInfo property, CancellationToken token)
+		public static async Task<object> ReadPropertyAsync(this SqlDataReader reader, PropertyInfo property, CancellationToken token)
 		{
 			var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 			var propertyType = property.PropertyType;
@@ -2395,14 +2392,14 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Creates and populates an object of type T from the data in the database.
 		/// </summary>
-		/// <typeparam name="T">The type of object to create an populate</typeparam>
 		/// <param name="reader">The SqlDataReader used to populate the object</param>
 		/// <param name="node">The list of fields to populate</param>
+		/// <param name="T">The type of object to create an populate</param>
 		/// <returns></returns>
-		public static T Read<T>(this SqlDataReader reader, RqlNode node)
+		public static object Read(this SqlDataReader reader, RqlNode node, Type T)
 		{
-			var model = Activator.CreateInstance<T>();
-			PropertyInfo[] properties = typeof(T).GetProperties();
+			var model = Activator.CreateInstance(T);
+			PropertyInfo[] properties = T.GetProperties();
 			var aggregates = RqlUtilities.ExtractAggregates(node);
 
 			if (aggregates != null && aggregates.Count > 0)
@@ -2417,7 +2414,7 @@ namespace COFRS.SqlServer
 
 						if (memberAttribute != null)
 						{
-							property.SetValue(model, reader.ReadProperty<T>(property));
+							property.SetValue(model, reader.ReadProperty(property));
 						}
 					}
 				}
@@ -2458,12 +2455,12 @@ namespace COFRS.SqlServer
 								}
 								else
 								{
-									property.SetValue(model, reader.ReadProperty<T>(property));
+									property.SetValue(model, reader.ReadProperty(property));
 								}
 							}
 							else
 							{
-								property.SetValue(model, reader.ReadProperty<T>(property));
+								property.SetValue(model, reader.ReadProperty(property));
 							}
 						}
 					}
@@ -2472,17 +2469,18 @@ namespace COFRS.SqlServer
 
 			return model;
 		}
+
 		/// <summary>
 		/// Creates and populates an object of type T from the data in the database.
 		/// </summary>
-		/// <typeparam name="T">The type of object to create an populate</typeparam>
 		/// <param name="reader">The SqlDataReader used to populate the object</param>
 		/// <param name="node">The list of fields to populate</param>
+		/// <param name="T">The type of object to create an populate</param>
 		/// <returns></returns>
-		public static async Task<T> ReadAsync<T>(this SqlDataReader reader, RqlNode node)
+		public static async Task<object> ReadAsync(this SqlDataReader reader, RqlNode node, Type T)
 		{
-			var model = Activator.CreateInstance<T>();
-			PropertyInfo[] properties = typeof(T).GetProperties();
+			var model = Activator.CreateInstance(T);
+			PropertyInfo[] properties = T.GetProperties();
 			var aggregates = RqlUtilities.ExtractAggregates(node);
 
 			if (aggregates != null && aggregates.Count > 0)
@@ -2497,7 +2495,7 @@ namespace COFRS.SqlServer
 
 						if (memberAttribute != null)
 						{
-							property.SetValue(model, await reader.ReadPropertyAsync<T>(property));
+							property.SetValue(model, await reader.ReadPropertyAsync(property));
 						}
 					}
 				}
@@ -2538,12 +2536,12 @@ namespace COFRS.SqlServer
 								}
 								else
 								{
-									property.SetValue(model, await reader.ReadPropertyAsync<T>(property));
+									property.SetValue(model, await reader.ReadPropertyAsync(property));
 								}
 							}
 							else
 							{
-								property.SetValue(model, await reader.ReadPropertyAsync<T>(property));
+								property.SetValue(model, await reader.ReadPropertyAsync(property));
 							}
 						}
 					}
@@ -2557,15 +2555,15 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Creates and populates an object of type T from the data in the database.
 		/// </summary>
-		/// <typeparam name="T">The type of object to create an populate</typeparam>
 		/// <param name="reader">The SqlDataReader used to populate the object</param>
 		/// <param name="node">The list of fields to populate</param>
+		/// <param name="T">The type of object to create an populate</param>
 		/// <param name="token">The Cancellation token</param>
 		/// <returns></returns>
-		public static async Task<T> ReadAsync<T>(this SqlDataReader reader, RqlNode node, CancellationToken token)
+		public static async Task<object> ReadAsync(this SqlDataReader reader, RqlNode node, Type T, CancellationToken token)
 		{
-			var model = Activator.CreateInstance<T>();
-			PropertyInfo[] properties = typeof(T).GetProperties();
+			var model = Activator.CreateInstance(T);
+			PropertyInfo[] properties = T.GetProperties();
 			var aggregates = RqlUtilities.ExtractAggregates(node);
 
 			if (aggregates != null && aggregates.Count > 0)
@@ -2580,7 +2578,7 @@ namespace COFRS.SqlServer
 
 						if (memberAttribute != null)
 						{
-							property.SetValue(model, await reader.ReadPropertyAsync<T>(property, token));
+							property.SetValue(model, await reader.ReadPropertyAsync(property, token));
 						}
 					}
 				}
@@ -2621,12 +2619,12 @@ namespace COFRS.SqlServer
 								}
 								else
 								{
-									property.SetValue(model, await reader.ReadPropertyAsync<T>(property, token));
+									property.SetValue(model, await reader.ReadPropertyAsync(property, token));
 								}
 							}
 							else
 							{
-								property.SetValue(model, await reader.ReadPropertyAsync<T>(property, token));
+								property.SetValue(model, await reader.ReadPropertyAsync(property, token));
 							}
 						}
 					}

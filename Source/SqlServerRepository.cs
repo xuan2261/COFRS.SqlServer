@@ -1,5 +1,6 @@
 ﻿using COFRS.Rql;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog.Context;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,6 @@ namespace COFRS.SqlServer
 	public class SqlServerRepository : IRepository
 	{
 		/// <summary>
-		/// The logger
-		/// </summary>
-		protected ILogger logger;
-
-		/// <summary>
 		/// The repository options used to connect to and interact with the database
 		/// </summary>
 		protected readonly IRepositoryOptions _options;
@@ -38,18 +34,20 @@ namespace COFRS.SqlServer
 		protected IServiceProvider ServiceProvider;
 
 		/// <summary>
+		/// The Service Provider
+		/// </summary>
+		protected ILogger<SqlServerRepository> Logger;
+
+		/// <summary>
 		/// Initializes a repository with the specified options
 		/// </summary>
+		/// <param name="logger"></param>
 		/// <param name="serviceProvider"></param>
-		public SqlServerRepository(IServiceProvider serviceProvider)
+		public SqlServerRepository(ILogger<SqlServerRepository> logger, IServiceProvider serviceProvider)
 		{
 			try
 			{
-				using (var factory = new LoggerFactory())
-				{
-					logger = factory.CreateLogger("ApiRepository");
-				}
-
+				Logger = logger;
 				ServiceProvider = serviceProvider;
 				_options = (IRepositoryOptions) ServiceProvider.GetService(typeof(IRepositoryOptions));
 				_connection = new SqlConnection(_options.ConnectionString);
@@ -65,10 +63,9 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Asynchronously adds an item to the datastore
 		/// </summary>
-		/// <typeparam name="T">The type of object to add</typeparam>
 		/// <param name="item">The item to add</param>
 		/// <returns></returns>
-		public async Task<T> AddAsync<T>(T item)
+		public async Task<object> AddAsync(object item)
 		{
 			using var ctc = new CancellationTokenSource();
 			var task = Task.Run(async () =>
@@ -76,13 +73,11 @@ namespace COFRS.SqlServer
 				var parameters = new List<SqlParameter>();
 				var emitter = new Emitter(ServiceProvider);
 
-				var sql = emitter.BuildAddQuery(item,
-				parameters,
-				out PropertyInfo identityProperty);
+				var sql = emitter.BuildAddQuery(item, parameters, out PropertyInfo identityProperty);
 
 				using (LogContext.PushProperty("SQL", sql.ToString()))
 				{
-					logger.LogDebug($"[REPOSITORY] Add<{typeof(T).Name}>");
+					Logger.LogDebug($"[REPOSITORY] Add<{item.GetType().Name}>");
 
 					using var command = new SqlCommand(sql, _connection);
 					foreach (var parameter in parameters)
@@ -120,9 +115,9 @@ namespace COFRS.SqlServer
 		/// Deletes an item(s) from the datastore that match the specified keys. If no keys are specified
 		/// all the items of type T will be deleted.
 		/// </summary>
-		/// <typeparam name="T">The type of item to delete</typeparam>
+		/// <param name="T">The type of item to delete</param>
 		/// <param name="keys">The keys that defined the item to be deleted</param>
-		public async Task DeleteAsync<T>(IEnumerable<KeyValuePair<string, object>> keys)
+		public async Task DeleteAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys)
 		{
 			using var ctc = new CancellationTokenSource();
 			var task = Task.Run(async () =>
@@ -130,7 +125,7 @@ namespace COFRS.SqlServer
 				var parameters = new List<SqlParameter>();
 				var emitter = new Emitter(ServiceProvider);
 
-				var sql = emitter.BuildDeleteQuery<T>(keys, parameters);
+				var sql = emitter.BuildDeleteQuery(keys, parameters, T);
 
 				using var command = new SqlCommand(sql, _connection);
 				foreach (var parameter in parameters)
@@ -148,38 +143,42 @@ namespace COFRS.SqlServer
 			}
 		}
 
+
 		/// <summary>
 		/// Gets a collection
 		/// </summary>
-		/// <typeparam name="T">The type of items to retrieve</typeparam>
+		/// <param name="T">The type of items to retrieve</param>
 		/// <param name="node">The compiled RQL Query</param>
 		/// <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
 		/// <returns></returns>
-		public async Task<RqlCollection<T>> GetCollectionAsync<T>(RqlNode node, bool NoPaging)
+		public async Task<object> GetCollectionAsync(Type T, RqlNode node, bool NoPaging)
 		{
-			return await GetCollectionAsync<T>(new List<KeyValuePair<string, object>>(), node, NoPaging);
+			return await GetCollectionAsync(T, new List<KeyValuePair<string, object>>(), node, NoPaging);
 		}
 
 		/// <summary>
 		/// Gets a collection
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
+		/// <param name="T">The type of items to retrieve</param>
 		/// <param name="keys">The list of keys to further limit the results of the query.</param>
 		/// <param name="node">The compiled RQL Query</param>
 		/// <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
 		/// <returns></returns>
-		public async Task<RqlCollection<T>> GetCollectionAsync<T>(IEnumerable<KeyValuePair<string, object>> keys, RqlNode node, bool NoPaging)
+		public async Task<object> GetCollectionAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys, RqlNode node, bool NoPaging)
 		{
 			using var ctc = new CancellationTokenSource();
 			var task = Task.Run(async () =>
 			{
 				var parameters = new List<SqlParameter>();
-				var results = new RqlCollection<T>();
+				var results = new RqlCollection<object>();
 				var pageFilter = RqlUtilities.ExtractClause(RqlNodeType.LIMIT, node);
-				var options = (IRepositoryOptions) ServiceProvider.GetService(typeof(IRepositoryOptions));
-				var translationOptions = (ITranslationOptions)ServiceProvider.GetService(typeof(ITranslationOptions));
-				var resultList = new List<T>();
+				var options = ServiceProvider.GetService<IRepositoryOptions>();
+				var translationOptions = ServiceProvider.GetService<ITranslationOptions>();
 				var emitter = new Emitter(ServiceProvider);
+
+				var rdgeneric = typeof(List<>);
+				var rd = rdgeneric.MakeGenericType(T);
+				var resultList = (List<object>) Activator.CreateInstance(rd);
 
 				if (!NoPaging)
 				{
@@ -189,11 +188,11 @@ namespace COFRS.SqlServer
 					}
 					else
 					{
-						var sqlCount = emitter.BuildCollectionCountQuery<T>(keys, node, parameters);
+						var sqlCount = emitter.BuildCollectionCountQuery(keys, node, parameters, T);
 
 						using (LogContext.PushProperty("SQL", sqlCount.ToString()))
 						{
-							logger.LogTrace($"[REPOSITORY] ReadCollection<{typeof(T).Name}>");
+							Logger.LogTrace($"[REPOSITORY] ReadCollection<{T.Name}>");
 
 							//	We now have an SQL query that needs to be executed in order to get our object.
 							using var command = new SqlCommand(sqlCount, _connection);
@@ -215,11 +214,11 @@ namespace COFRS.SqlServer
 				}
 
 				parameters.Clear();
-				var sql = emitter.BuildCollectionListQuery<T>(keys, node, results.count, _options.BatchLimit, pageFilter, parameters, NoPaging);
+				var sql = emitter.BuildCollectionListQuery(keys, node, results.count, _options.BatchLimit, pageFilter, parameters, T, NoPaging);
 
 				using (LogContext.PushProperty("SQL", sql.ToString()))
 				{
-					logger.LogTrace($"[REPOSITORY] ReadCollection<{typeof(T).Name}>");
+					Logger.LogTrace($"[REPOSITORY] ReadCollection<{T.Name}>");
 
 					if (ctc.Token.IsCancellationRequested)
 						return default;
@@ -235,7 +234,7 @@ namespace COFRS.SqlServer
 						using var reader = await command.ExecuteReaderAsync(ctc.Token);
 						while (await reader.ReadAsync(ctc.Token))
 						{
-							resultList.Add(await reader.ReadAsync<T>(node, ctc.Token));
+							resultList.Add(await reader.ReadAsync(node, T, ctc.Token));
 
 							if (ctc.Token.IsCancellationRequested)
 								return default;
@@ -313,21 +312,21 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Returns a single item based on a set of keys
 		/// </summary>
-		/// <typeparam name="T">The type of object to retrieve</typeparam>
+		/// <param name="T">The type of object to retrieve</param>
 		/// <param name="keys">The primary key value</param>
 		/// <param name="node">The compiled RQL query</param>
 		/// <returns></returns>
-		public async Task<T> GetSingleAsync<T>(IEnumerable<KeyValuePair<string, object>> keys, RqlNode node)
+		public async Task<object> GetSingleAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys, RqlNode node)
 		{
 			using var ctc = new CancellationTokenSource();
 			var task = Task.Run(async () =>
 			{
 				var parameters = new List<SqlParameter>();
 				var emitter = new Emitter(ServiceProvider);
-				var sql = emitter.BuildSingleQuery<T>(keys, node, parameters);
+				var sql = emitter.BuildSingleQuery(keys, node, parameters, T);
 
 				using (LogContext.PushProperty("SQL", sql.ToString()))
-					logger.LogDebug($"[REPOSITORY] ReadSingle<{typeof(T).Name}>");
+					Logger.LogDebug($"[REPOSITORY] ReadSingle<{T.Name}>");
 
 				//	We now have an SQL query that needs to be executed in order to get our object.
 				using (var command = new SqlCommand(sql, _connection))
@@ -342,7 +341,7 @@ namespace COFRS.SqlServer
 					{
 						//	Read the object (of type T) from the database.
 						//	This will create a new object of type T populated with data from the database.
-						return await reader.ReadAsync<T>(node, ctc.Token);
+						return await reader.ReadAsync(node, T, ctc.Token);
 					}
 				}
 
@@ -361,10 +360,9 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Update an item in the repository
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
 		/// <param name="item"></param>
 		/// <returns></returns>
-		public async Task UpdateAsync<T>(T item)
+		public async Task UpdateAsync(object item)
 		{
 			using var ctc = new CancellationTokenSource();
 			var task = Task.Run(async () =>
@@ -374,7 +372,7 @@ namespace COFRS.SqlServer
 				var sql = emitter.BuildUpdateQuery(item, parameters);
 
 				using (LogContext.PushProperty("SQL", sql.ToString()))
-					logger.LogTrace($"[REPOSITORY] Update<{typeof(T).Name}>");
+					Logger.LogTrace($"[REPOSITORY] Update<{item.GetType().Name}>");
 
 				using var command = new SqlCommand(sql, _connection);
 				foreach (var parameter in parameters)
@@ -455,9 +453,6 @@ namespace COFRS.SqlServer
 					_connection.Close();
 					_connection.Dispose();
 				}
-
-				// TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-				// TODO: set large fields to null.
 
 				disposedValue = true;
 			}

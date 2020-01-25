@@ -29,14 +29,17 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Updates an item in the datastore
 		/// </summary>
-		/// <typeparam name="T">The type of item to update</typeparam>
 		/// <param name="item">The item to update</param>
 		/// <param name="parameters">The list of SQL Parameters needed to execute the SQL statement</param>
 		/// <returns></returns>
-		public string BuildUpdateQuery<T>(T item, List<SqlParameter> parameters)
+		public string BuildUpdateQuery(object item, List<SqlParameter> parameters)
 		{
-			var properties = typeof(T).GetProperties();
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>();
+			var tableAttribute = item.GetType().GetCustomAttribute<Table>();
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {item.GetType().Name} is not an entity model."));
+
+			var properties = item.GetType().GetProperties();
 			var sql = new StringBuilder();
 
 			List<RqlNode> keyNodes = new List<RqlNode>();
@@ -61,7 +64,7 @@ namespace COFRS.SqlServer
 			}
 
 			var node = new RqlNode(RqlNodeType.AND, keyNodes);
-			string whereClause = ParseWhereClause<T>(node, null, parameters);
+			string whereClause = ParseWhereClause(node, null, parameters, item.GetType());
 
 			if (string.IsNullOrWhiteSpace(tableAttribute.Schema))
 				sql.AppendLine($"UPDATE [{tableAttribute.Name}]");
@@ -111,14 +114,18 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Builds a query to delete an object from the datastore using the specfied keys
 		/// </summary>
-		/// <typeparam name="T">The type of item to delete</typeparam>
 		/// <param name="keys">The list of keys used to identify the items to be deleted</param>
 		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
+		/// <param name="T">The type of item to delete</param>
 		/// <returns></returns>
-		public string BuildDeleteQuery<T>(IEnumerable<KeyValuePair<string, object>> keys, List<SqlParameter> parameters)
+		public string BuildDeleteQuery(IEnumerable<KeyValuePair<string, object>> keys, List<SqlParameter> parameters, Type T)
 		{
-			var properties = typeof(T).GetProperties();
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>();
+			var tableAttribute = T.GetCustomAttribute<Table>();
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
+			var properties = T.GetProperties();
 			var sql = new StringBuilder();
 			string whereClause = string.Empty;
 
@@ -128,7 +135,7 @@ namespace COFRS.SqlServer
 
 				foreach (var key in keys)
 				{
-					var property = typeof(T).GetProperties().FirstOrDefault(p => string.Equals(p.Name, key.Key, StringComparison.OrdinalIgnoreCase));
+					var property = properties.FirstOrDefault(p => string.Equals(p.Name, key.Key, StringComparison.OrdinalIgnoreCase));
 
 					if (property != null)
 					{
@@ -155,7 +162,7 @@ namespace COFRS.SqlServer
 
 				var node = new RqlNode(RqlNodeType.AND, keyNodes);
 				
-				whereClause = ParseWhereClause<T>(node, null, parameters);
+				whereClause = ParseWhereClause(node, null, parameters, T);
 			}
 
 			if (string.IsNullOrWhiteSpace(tableAttribute.Schema))
@@ -172,16 +179,19 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Builds the SQL query to add an item to the datastore
 		/// </summary>
-		/// <typeparam name="T">The type of item to be added</typeparam>
 		/// <param name="item">The item to be added</param>
 		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
 		/// <param name="identityProperty"></param>
 		/// <returns></returns>
-		public string BuildAddQuery<T>(T item, List<SqlParameter> parameters, out PropertyInfo identityProperty)
+		public string BuildAddQuery(object item, List<SqlParameter> parameters, out PropertyInfo identityProperty)
 		{
+			var tableAttribute = item.GetType().GetCustomAttribute<Table>();
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {item.GetType().Name} is not an entity model."));
+
 			var sql = new StringBuilder();
-			var properties = typeof(T).GetProperties();
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>();
+			var properties = item.GetType().GetProperties();
 			var containsIdentity = false;
 
 			identityProperty = null;
@@ -297,21 +307,25 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Builds the SQL query for a single result
 		/// </summary>
-		/// <typeparam name="T"></typeparam>
 		/// <param name="keyList"></param>
 		/// <param name="node"></param>
 		/// <param name="parameters">The list of SQL parameters that must be bound to execute the SQL statement</param>
+		/// <param name="T">The type of item to query</param>
 		/// <returns></returns>
-		public string BuildSingleQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters)
+		public string BuildSingleQuery(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters, Type T)
 		{
 			var sql = new StringBuilder();
-			var whereClause = ParseWhereClause<T>(node, null, parameters);
-			var orderByClause = ParseOrderByClause<T>(node);
+			var whereClause = ParseWhereClause(node, null, parameters, T);
+			var orderByClause = ParseOrderByClause(node, T);
 			var selectFields = RqlUtilities.ExtractClause(RqlNodeType.SELECT, node);
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>();
-			var joinAttributes = typeof(T).GetCustomAttributes<Join>(false);
-			var joinConditions = typeof(T).GetCustomAttributes<JoinCondition>(false);
-			var properties = typeof(T).GetProperties();
+			var tableAttribute = T.GetCustomAttribute<Table>();
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
+			var joinAttributes = T.GetCustomAttributes<Join>(false);
+			var joinConditions = T.GetCustomAttributes<JoinCondition>(false);
+			var properties = T.GetProperties();
 			bool firstField = true;
 
 			sql.Append("SELECT ");
@@ -464,7 +478,7 @@ namespace COFRS.SqlServer
 							sql.Append($"\r\n INNER JOIN [{joinAttribute.TableName}] on ");
 						else
 							sql.Append($"\r\n INNER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-						AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+						AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 						break;
 
 					case JoinType.LeftOuter:
@@ -472,7 +486,7 @@ namespace COFRS.SqlServer
 							sql.Append($"\r\n  LEFT OUTER JOIN [{joinAttribute.TableName}] on ");
 						else
 							sql.Append($"\r\n  LEFT OUTER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-						AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+						AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 						break;
 
 					case JoinType.RightOuter:
@@ -480,7 +494,7 @@ namespace COFRS.SqlServer
 							sql.Append($"\r\n RIGHT OUTER JOIN [{joinAttribute.TableName}] on ");
 						else
 							sql.Append($"\r\n RIGHT OUTER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-						AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+						AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 						break;
 				}
 			}
@@ -540,16 +554,21 @@ namespace COFRS.SqlServer
 		/// <param name="keyList"></param>
 		/// <param name="node"></param>
 		/// <param name="parameters"></param>
+		/// <param name="T"></param>
 		/// <returns></returns>
-		internal string BuildCollectionCountQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters)
+		internal string BuildCollectionCountQuery(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, List<SqlParameter> parameters, Type T)
 		{
-			var sql = new StringBuilder();
-			var whereClause = ParseWhereClause<T>(node, null, parameters);
+			var tableAttribute = T.GetCustomAttribute<Table>(false);
 
-			var properties = typeof(T).GetProperties();
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
-			var joinAttributes = typeof(T).GetCustomAttributes<Join>(false);
-			var joinConditions = typeof(T).GetCustomAttributes<JoinCondition>(false);
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
+			var sql = new StringBuilder();
+			var whereClause = ParseWhereClause(node, null, parameters, T);
+
+			var properties = T.GetProperties();
+			var joinAttributes = T.GetCustomAttributes<Join>(false);
+			var joinConditions = T.GetCustomAttributes<JoinCondition>(false);
 
 			sql.Append("SELECT ");
 
@@ -581,7 +600,7 @@ namespace COFRS.SqlServer
 							sql.Append($" INNER JOIN [{joinAttribute.TableName}] on ");
 						else
 							sql.Append($" INNER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-						AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+						AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 						break;
 
 					case JoinType.LeftOuter:
@@ -589,7 +608,7 @@ namespace COFRS.SqlServer
 							sql.Append($"  LEFT OUTER JOIN [{joinAttribute.TableName}] on ");
 						else
 							sql.Append($"  LEFT OUTER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-						AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+						AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 						break;
 
 					case JoinType.RightOuter:
@@ -597,7 +616,7 @@ namespace COFRS.SqlServer
 							sql.Append($" RIGHT OUTER JOIN [{joinAttribute.TableName}] on ");
 						else
 							sql.Append($" RIGHT OUTER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-						AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+						AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 						break;
 				}
 			}
@@ -661,20 +680,25 @@ namespace COFRS.SqlServer
 		/// <param name="batchLimit">The maximum number of items that can be included in a collection batch</param>
 		/// <param name="pageFilter">The page filter that applies to the collection</param>
 		/// <param name="parameters">The parameters for the SQL query</param>
+		/// <param name="T">The type of items to query</param>
 		/// <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
 		/// <returns></returns>
-		internal string BuildCollectionListQuery<T>(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, int count, int batchLimit, RqlNode pageFilter, List<SqlParameter> parameters, bool NoPaging)
+		internal string BuildCollectionListQuery(IEnumerable<KeyValuePair<string, object>> keyList, RqlNode node, int count, int batchLimit, RqlNode pageFilter, List<SqlParameter> parameters, Type T, bool NoPaging)
 		{
+			var tableAttribute = T.GetCustomAttribute<Table>(false);
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
 			var sql = new StringBuilder();
-			var whereClause = ParseWhereClause<T>(node, null, parameters);
-			var orderByClause = ParseOrderByClause<T>(node);
+			var whereClause = ParseWhereClause(node, null, parameters, T);
+			var orderByClause = ParseOrderByClause(node, T);
 			var selectFields = RqlUtilities.ExtractClause(RqlNodeType.SELECT, node);
 			var options = (IRepositoryOptions)ServiceProvider.GetService(typeof(IRepositoryOptions));
 
-			var properties = typeof(T).GetProperties();
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
-			var joinAttributes = typeof(T).GetCustomAttributes<Join>(false);
-			var joinConditions = typeof(T).GetCustomAttributes<JoinCondition>(false);
+			var properties = T.GetProperties();
+			var joinAttributes = T.GetCustomAttributes<Join>(false);
+			var joinConditions = T.GetCustomAttributes<JoinCondition>(false);
 
 			if (NoPaging || (count < batchLimit && pageFilter == null))
 			{
@@ -769,7 +793,7 @@ namespace COFRS.SqlServer
 								sql.Append($"\r\n INNER JOIN [{joinAttribute.TableName}] on ");
 							else
 								sql.Append($"\r\n INNER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-							AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+							AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 							break;
 
 						case JoinType.LeftOuter:
@@ -777,7 +801,7 @@ namespace COFRS.SqlServer
 								sql.Append($"\r\n LEFT OUTER JOIN [{joinAttribute.TableName}] on ");
 							else
 								sql.Append($"\r\n LEFT OUTER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-							AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+							AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 							break;
 
 						case JoinType.RightOuter:
@@ -785,7 +809,7 @@ namespace COFRS.SqlServer
 								sql.Append($"\r\n RIGHT OUTER JOIN [{joinAttribute.TableName}] on ");
 							else
 								sql.Append($"\r\n RIGHT OUTER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-							AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+							AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 							break;
 					}
 				}
@@ -1037,7 +1061,7 @@ namespace COFRS.SqlServer
 								sql.Append($"\r\n INNER JOIN [{joinAttribute.TableName}] on ");
 							else
 								sql.Append($"\r\n INNER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-							AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+							AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 							break;
 
 						case JoinType.LeftOuter:
@@ -1045,7 +1069,7 @@ namespace COFRS.SqlServer
 								sql.Append($"\r\n LEFT OUTER JOIN [{joinAttribute.TableName}] on ");
 							else
 								sql.Append($"\r\n LEFT OUTER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-							AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+							AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 							break;
 
 						case JoinType.RightOuter:
@@ -1053,7 +1077,7 @@ namespace COFRS.SqlServer
 								sql.Append($"\r\n RIGHT OUTER JOIN [{joinAttribute.TableName}] on ");
 							else
 								sql.Append($"\r\n RIGHT OUTER JOIN [{joinAttribute.Schema}].[{joinAttribute.TableName}] on ");
-							AddJoinConditions<T>(sql, tableAttribute, joinAttribute, currentJoinConditons, parameters);
+							AddJoinConditions(sql, joinAttribute, currentJoinConditons, parameters, T);
 							break;
 					}
 				}
@@ -1128,12 +1152,17 @@ namespace COFRS.SqlServer
 		/// Add join conditions
 		/// </summary>
 		/// <param name="sql"></param>
-		/// <param name="tableAttribute"></param>
 		/// <param name="joinAttribute"></param>
 		/// <param name="currentJoinConditons"></param>
 		/// <param name="parameters"></param>
-		private void AddJoinConditions<T>(StringBuilder sql, Table tableAttribute, Join joinAttribute, IEnumerable<JoinCondition> currentJoinConditons, List<SqlParameter> parameters)
+		/// <param name="T"></param>
+		private void AddJoinConditions(StringBuilder sql, Join joinAttribute, IEnumerable<JoinCondition> currentJoinConditons, List<SqlParameter> parameters, Type T)
 		{
+			var tableAttribute = T.GetCustomAttribute<Table>(false);
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
 			bool first = true;
 
 			foreach (var joinCondition in currentJoinConditons)
@@ -1236,7 +1265,7 @@ namespace COFRS.SqlServer
 						}
 						else
 						{
-							var property = GetProperty<T>(joinCondition.ReferenceField);
+							var property = T.GetProperties().FirstOrDefault(p => string.Equals(p.Name, joinCondition.ReferenceField, StringComparison.OrdinalIgnoreCase));
 
 							if (joinCondition.ReferenceLiteral.GetType() == typeof(string))
 							{
@@ -1266,16 +1295,20 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Returns a formatted WHERE clause representation of the filters in the query string
 		/// </summary>
-		/// <typeparam name="T">The type of object from which the fields are being selected</typeparam>
 		/// <param name="node">The RQL node representation of the query string</param>
 		/// <param name="op"></param>
 		/// <param name="parameters"></param>
+		/// <param name="T">The type of object from which the fields are being selected</param>
 		/// <returns></returns>
-		private string ParseWhereClause<T>(RqlNode node, string op, List<SqlParameter> parameters)
+		private string ParseWhereClause(RqlNode node, string op, List<SqlParameter> parameters, Type T)
 		{
+			var tableAttribute = T.GetCustomAttribute<Table>(false);
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
 			var whereClause = new StringBuilder();
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
-			var properties = typeof(T).GetProperties();
+			var properties = T.GetProperties();
 
 			if (node == null)
 				return string.Empty;
@@ -1291,7 +1324,7 @@ namespace COFRS.SqlServer
 
 						foreach (RqlNode argument in node.Value<List<RqlNode>>())
 						{
-							var subClause = ParseWhereClause<T>(argument, "AND", parameters);
+							var subClause = ParseWhereClause(argument, "AND", parameters, T);
 
 							if (!string.IsNullOrWhiteSpace(subClause))
 							{
@@ -1318,7 +1351,7 @@ namespace COFRS.SqlServer
 
 						foreach (RqlNode argument in node.Value<List<RqlNode>>())
 						{
-							var subClause = ParseWhereClause<T>(argument, "OR", parameters);
+							var subClause = ParseWhereClause(argument, "OR", parameters, T);
 
 							if (!string.IsNullOrWhiteSpace(subClause))
 							{
@@ -1337,27 +1370,27 @@ namespace COFRS.SqlServer
 					break;
 
 				case RqlNodeType.GE:
-					whereClause.Append(ConstructComparrisonOperator<T>(">=", node.Value<string>(0), node.Value<object>(1), parameters));
+					whereClause.Append(ConstructComparrisonOperator(">=", node.Value<string>(0), node.Value<object>(1), parameters, T));
 					break;
 
 				case RqlNodeType.GT:
-					whereClause.Append(ConstructComparrisonOperator<T>(">", node.Value<string>(0), node.Value<object>(1), parameters));
+					whereClause.Append(ConstructComparrisonOperator(">", node.Value<string>(0), node.Value<object>(1), parameters, T));
 					break;
 
 				case RqlNodeType.LE:
-					whereClause.Append(ConstructComparrisonOperator<T>("<=", node.Value<string>(0), node.Value<object>(1), parameters));
+					whereClause.Append(ConstructComparrisonOperator("<=", node.Value<string>(0), node.Value<object>(1), parameters, T));
 					break;
 
 				case RqlNodeType.LT:
-					whereClause.Append(ConstructComparrisonOperator<T>("<", node.Value<string>(0), node.Value<object>(1), parameters));
+					whereClause.Append(ConstructComparrisonOperator("<", node.Value<string>(0), node.Value<object>(1), parameters, T));
 					break;
 
 				case RqlNodeType.EQ:
-					whereClause.Append(ConstructComparrisonOperator<T>("=", node.Value<string>(0), node.Value<object>(1), parameters));
+					whereClause.Append(ConstructComparrisonOperator("=", node.Value<string>(0), node.Value<object>(1), parameters, T));
 					break;
 
 				case RqlNodeType.NE:
-					whereClause.Append(ConstructComparrisonOperator<T>("<>", node.Value<string>(0), node.Value<object>(1), parameters));
+					whereClause.Append(ConstructComparrisonOperator("<>", node.Value<string>(0), node.Value<object>(1), parameters, T));
 					break;
 
 				case RqlNodeType.IN:
@@ -1393,12 +1426,12 @@ namespace COFRS.SqlServer
 							}
 							else
 							{
-								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 							}
 						}
 						else
 						{
-							throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+							throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 						}
 					}
 					break;
@@ -1436,12 +1469,12 @@ namespace COFRS.SqlServer
 							}
 							else
 							{
-								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 							}
 						}
 						else
 						{
-							throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+							throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 						}
 					}
 					break;
@@ -1475,12 +1508,12 @@ namespace COFRS.SqlServer
 							}
 							else
 							{
-								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 							}
 						}
 						else
 						{
-							throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+							throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 						}
 					}
 					break;
@@ -1514,12 +1547,12 @@ namespace COFRS.SqlServer
 							}
 							else
 							{
-								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 							}
 						}
 						else
 						{
-							throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+							throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 						}
 					}
 					break;
@@ -1528,10 +1561,14 @@ namespace COFRS.SqlServer
 			return whereClause.ToString();
 		}
 
-		private string ConstructComparrisonOperator<T>(string operation, string attributeName, object attributeValue, List<SqlParameter> parameters)
+		private string ConstructComparrisonOperator(string operation, string attributeName, object attributeValue, List<SqlParameter> parameters, Type T)
 		{
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
-			var property = typeof(T).GetProperties().FirstOrDefault(x => x.Name.ToLower() == attributeName.ToLower());
+			var tableAttribute = T.GetCustomAttribute<Table>(false);
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
+			var property = T.GetProperties().FirstOrDefault(x => x.Name.ToLower() == attributeName.ToLower());
 
 			if (property != null)
 			{
@@ -1580,25 +1617,29 @@ namespace COFRS.SqlServer
 				}
 				else
 				{
-					throw new ApiException(HttpStatusCode.BadRequest, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+					throw new ApiException(HttpStatusCode.BadRequest, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 				}
 			}
 			else
 			{
-				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("invalid_operation", $"Malformed RQL query: {attributeName} is not a member of {typeof(T).Name}."));
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("invalid_operation", $"Malformed RQL query: {attributeName} is not a member of {T.Name}."));
 			}
 		}
 
 		/// <summary>
 		/// Returns a formatted ORDER BY clause representation of the sort operation in the query string
 		/// </summary>
-		/// <typeparam name="T">The type of object from which the fields are being selected</typeparam>
 		/// <param name="node">The RQL node representation of the query string</param>
+		/// <param name="T">The type of object from which the fields are being selected</param>
 		/// <returns></returns>
-		private string ParseOrderByClause<T>(RqlNode node)
+		private string ParseOrderByClause(RqlNode node, Type T)
 		{
+			var tableAttribute = T.GetCustomAttribute<Table>(false);
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
 			var orderByClause = new StringBuilder();
-			var tableAttribute = typeof(T).GetCustomAttribute<Table>(false);
 
 			if (node == null)
 				return string.Empty;
@@ -1609,7 +1650,7 @@ namespace COFRS.SqlServer
 					{
 						foreach (RqlNode argument in node.Value<List<RqlNode>>())
 						{
-							var subClause = ParseOrderByClause<T>(argument);
+							var subClause = ParseOrderByClause(argument, T);
 
 							if (!string.IsNullOrWhiteSpace(subClause))
 							{
@@ -1625,7 +1666,7 @@ namespace COFRS.SqlServer
 					{
 						foreach (RqlNode argument in node.Value<List<RqlNode>>())
 						{
-							var subClause = ParseOrderByClause<T>(argument);
+							var subClause = ParseOrderByClause(argument, T);
 
 							if (!string.IsNullOrWhiteSpace(subClause))
 							{
@@ -1644,7 +1685,7 @@ namespace COFRS.SqlServer
 						{
 							var field = argument.ToString();
 							var fieldName = field.StartsWith("+") ? field.Substring(1) : field.StartsWith("-") ? field.Substring(1) : field;
-							var property = GetProperty<T>(fieldName);
+							var property = T.GetProperties().FirstOrDefault(p => string.Equals(p.Name, fieldName, StringComparison.OrdinalIgnoreCase));
 
 							if (property != null)
 							{
@@ -1675,22 +1716,16 @@ namespace COFRS.SqlServer
 									}
 								}
 								else
-									throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+									throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 							}
 							else
-								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {typeof(T).Name}"));
+								throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("invalid_operation", $"{property.Name} is not a member of {T.Name}"));
 						}
 					}
 					break;
 			}
 
 			return orderByClause.ToString();
-		}
-
-		private PropertyInfo GetProperty<T>(string name)
-		{
-			var properties = typeof(T).GetProperties();
-			return properties.FirstOrDefault(x => string.Compare(x.Name, name, true) == 0);
 		}
 
 		internal SqlParameter BuildSqlParameter(string parameterName, PropertyInfo property, object value)
