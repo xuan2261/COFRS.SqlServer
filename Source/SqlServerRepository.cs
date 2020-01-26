@@ -41,15 +41,16 @@ namespace COFRS.SqlServer
 		/// <summary>
 		/// Initializes a repository with the specified options
 		/// </summary>
-		/// <param name="logger"></param>
-		/// <param name="serviceProvider"></param>
-		public SqlServerRepository(ILogger<SqlServerRepository> logger, IServiceProvider serviceProvider)
+		///	<param name="logger">A generic interface for logging where the category name is derrived from the specified TCategoryName type name.</param>
+		///	<param name="provider">Defines a mechanism for retrieving a service object; that is, an object that provides custom support to other objects.</param>
+		///	<param name="options">The runtime options for this repository</param>
+		public SqlServerRepository(ILogger<SqlServerRepository> logger, IServiceProvider provider, IRepositoryOptions options)
 		{
 			try
 			{
 				Logger = logger;
-				ServiceProvider = serviceProvider;
-				_options = (IRepositoryOptions) ServiceProvider.GetService(typeof(IRepositoryOptions));
+				ServiceProvider = provider;
+				_options = options;
 				_connection = new SqlConnection(_options.ConnectionString);
 				_connection.Open();
 			}
@@ -58,6 +59,17 @@ namespace COFRS.SqlServer
 				throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("connection_error", $"Cannot open database connection to {_options.ConnectionString}."), error);
 			}
 		}
+
+		#region General Functions
+		/// <summary>
+		/// Returns the Repository options used by the repository
+		/// </summary>
+		/// <returns></returns>
+		public IRepositoryOptions GetOptions()
+		{
+			return _options;
+		}
+		#endregion
 
 		#region Asynchronous Operations
 		/// <summary>
@@ -325,8 +337,8 @@ namespace COFRS.SqlServer
 				var emitter = new Emitter(ServiceProvider);
 				var sql = emitter.BuildSingleQuery(keys, node, parameters, T);
 
-				using (LogContext.PushProperty("SQL", sql.ToString()))
-					Logger.LogDebug($"[REPOSITORY] ReadSingle<{T.Name}>");
+				Logger.BeginScope<string>(sql.ToString());
+				Logger.LogDebug($"[REPOSITORY] ReadSingle<{T.Name}>");
 
 				//	We now have an SQL query that needs to be executed in order to get our object.
 				using (var command = new SqlCommand(sql, _connection))
