@@ -548,7 +548,6 @@ namespace COFRS.SqlServer
 			return sql.ToString();
 		}
 
-		#region Helper Functions
 		/// <summary>
 		/// Builds the count query for the collection
 		/// </summary>
@@ -1149,6 +1148,7 @@ namespace COFRS.SqlServer
 			return sql.ToString();
 		}
 
+		#region Helper Functions
 		/// <summary>
 		/// Add join conditions
 		/// </summary>

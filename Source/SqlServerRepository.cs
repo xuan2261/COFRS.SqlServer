@@ -240,6 +240,7 @@ namespace COFRS.SqlServer
 				var sql = emitter.BuildCollectionListQuery(keys, node, Convert.ToInt32(countProperty.GetValue(results)), _options.BatchLimit, pageFilter, parameters, T, NoPaging);
 
 				int theCount = 0;
+				Logger.BeginScope<string>(sql.ToString());
 				using (LogContext.PushProperty("SQL", sql.ToString()))
 				{
 					Logger.LogTrace($"[REPOSITORY] ReadCollection<{T.Name}>");
