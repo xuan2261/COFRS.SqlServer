@@ -10,6 +10,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace COFRS.SqlServer
 {
@@ -182,7 +183,6 @@ namespace COFRS.SqlServer
 			var task = Task.Run(async () =>
 			{
 				var parameters = new List<SqlParameter>();
-				var results = new RqlCollection<object>();
 				var pageFilter = RqlUtilities.ExtractClause(RqlNodeType.LIMIT, node);
 				var options = ServiceProvider.GetService<IRepositoryOptions>();
 				var translationOptions = ServiceProvider.GetService<ITranslationOptions>();
@@ -190,7 +190,18 @@ namespace COFRS.SqlServer
 
 				var rdgeneric = typeof(List<>);
 				var rd = rdgeneric.MakeGenericType(T);
-				var resultList = (List<object>) Activator.CreateInstance(rd);
+				var resultList = Activator.CreateInstance(rd);
+
+				var rxgeneric = typeof(RqlCollection<>);
+				var rx = rxgeneric.MakeGenericType(T);
+				var results = Activator.CreateInstance(rx);
+				var countProperty = results.GetType().GetProperty("count");
+				var itemsProperty = results.GetType().GetProperty("items");
+				var limitProperty = results.GetType().GetProperty("limit");
+				var hrefProperty = results.GetType().GetProperty("href");
+				var firstProperty = results.GetType().GetProperty("first");
+				var previousProperty = results.GetType().GetProperty("previous");
+				var nextProperty = results.GetType().GetProperty("next");
 
 				if (!NoPaging)
 				{
@@ -216,7 +227,7 @@ namespace COFRS.SqlServer
 							using var reader = await command.ExecuteReaderAsync(ctc.Token);
 							if (await reader.ReadAsync())
 							{
-								results.count = await reader.ReadInt32Async("RecordCount", ctc.Token);
+								countProperty.SetValue(results, await reader.ReadInt32Async("RecordCount", ctc.Token));
 							}
 						}
 					}
@@ -226,8 +237,9 @@ namespace COFRS.SqlServer
 				}
 
 				parameters.Clear();
-				var sql = emitter.BuildCollectionListQuery(keys, node, results.count, _options.BatchLimit, pageFilter, parameters, T, NoPaging);
+				var sql = emitter.BuildCollectionListQuery(keys, node, Convert.ToInt32(countProperty.GetValue(results)), _options.BatchLimit, pageFilter, parameters, T, NoPaging);
 
+				int theCount = 0;
 				using (LogContext.PushProperty("SQL", sql.ToString()))
 				{
 					Logger.LogTrace($"[REPOSITORY] ReadCollection<{T.Name}>");
@@ -246,16 +258,22 @@ namespace COFRS.SqlServer
 						using var reader = await command.ExecuteReaderAsync(ctc.Token);
 						while (await reader.ReadAsync(ctc.Token))
 						{
-							resultList.Add(await reader.ReadAsync(node, T, ctc.Token));
+							var entity = await reader.ReadAsync(node, T, ctc.Token);
+							var method = resultList.GetType().GetMethod("Add");
+							method.Invoke(resultList, new object[] { entity });
+							theCount++;
 
 							if (ctc.Token.IsCancellationRequested)
 								return default;
 						}
 
-						results.items = resultList.ToArray();
+						var toArrayMethod = resultList.GetType().GetMethod("ToArray");
+						itemsProperty.SetValue(results, toArrayMethod.Invoke(resultList, null));
 
-						if (results.count == 0)
-							results.count = resultList.Count;
+						if (Convert.ToInt32(countProperty.GetValue(results)) == 0)
+						{
+							countProperty.SetValue(results, theCount);
+						}
 					}
 
 					if (ctc.Token.IsCancellationRequested)
@@ -273,10 +291,10 @@ namespace COFRS.SqlServer
 					var start = pageFilter.Value<int>(0);
 					var batchSize = pageFilter.Value<int>(1);
 
-					if (results.count <= batchSize)
-						results.limit = null;
+					if (Convert.ToInt32(countProperty.GetValue(results)) <= batchSize)
+						limitProperty.SetValue(results, null);
 					else
-						results.limit = resultList.Count;
+						limitProperty.SetValue(results, theCount);
 
 					var refNode = node;
 
@@ -287,7 +305,7 @@ namespace COFRS.SqlServer
 						refNode = new RqlNode(RqlNodeType.AND, new List<RqlNode> { new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit }), refNode });
 
 					var hrefNode = RqlUtilities.ReplaceClause(RqlNodeType.LIMIT, refNode, new RqlNode(RqlNodeType.LIMIT, new List<int> { start, batchSize }));
-					results.href = new Uri(translationOptions.RootUrl, $"collection?{hrefNode.ToString()}");
+					hrefProperty.SetValue(results, new Uri(translationOptions.RootUrl, $"collection?{hrefNode.ToString()}"));
 
 					if (start > 1)
 					{
@@ -296,16 +314,16 @@ namespace COFRS.SqlServer
 							newStart = 1;
 
 						var firstNode = RqlUtilities.ReplaceClause(RqlNodeType.LIMIT, refNode, new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, batchSize }));
-						results.first = new Uri(translationOptions.RootUrl, $"collection?{firstNode.ToString()}");
+						firstProperty.SetValue(results, new Uri(translationOptions.RootUrl, $"collection?{firstNode.ToString()}"));
 
 						var prevNode = RqlUtilities.ReplaceClause(RqlNodeType.LIMIT, refNode, new RqlNode(RqlNodeType.LIMIT, new List<int> { newStart, batchSize }));
-						results.previous = new Uri(translationOptions.RootUrl, $"collection?{prevNode.ToString()}");
+						previousProperty.SetValue(results, new Uri(translationOptions.RootUrl, $"collection?{prevNode.ToString()}"));
 					}
 
-					if (results.count >= pageFilter.Value<int>(0) + pageFilter.Value<int>(1))
+					if (Convert.ToInt32(countProperty.GetValue(results)) >= pageFilter.Value<int>(0) + pageFilter.Value<int>(1))
 					{
 						var nextNode = RqlUtilities.ReplaceClause(RqlNodeType.LIMIT, refNode, new RqlNode(RqlNodeType.LIMIT, new List<int> { start + batchSize, batchSize }));
-						results.next = new Uri(translationOptions.RootUrl, $"collection?{nextNode.ToString()}");
+						nextProperty.SetValue(results, new Uri(translationOptions.RootUrl, $"collection?{nextNode.ToString()}"));
 					}
 
 					return results;

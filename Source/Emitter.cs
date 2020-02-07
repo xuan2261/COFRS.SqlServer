@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Data.SqlClient;
 using System.Data;
+using Microsoft.Extensions.DependencyInjection;
 using COFRS.Rql;
 
 namespace COFRS.SqlServer
@@ -694,7 +695,7 @@ namespace COFRS.SqlServer
 			var whereClause = ParseWhereClause(node, null, parameters, T);
 			var orderByClause = ParseOrderByClause(node, T);
 			var selectFields = RqlUtilities.ExtractClause(RqlNodeType.SELECT, node);
-			var options = (IRepositoryOptions)ServiceProvider.GetService(typeof(IRepositoryOptions));
+			var options = ServiceProvider.GetService<IRepositoryOptions>();
 
 			var properties = T.GetProperties();
 			var joinAttributes = T.GetCustomAttributes<Join>(false);
