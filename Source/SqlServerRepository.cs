@@ -1,7 +1,6 @@
 ﻿using COFRS.Rql;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Serilog.Context;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -80,48 +79,52 @@ namespace COFRS.SqlServer
 		/// <returns></returns>
 		public async Task<object> AddAsync(object item)
 		{
-			using var ctc = new CancellationTokenSource();
-			var task = Task.Run(async () =>
+			using (var ctc = new CancellationTokenSource())
 			{
-				var parameters = new List<SqlParameter>();
-				var emitter = new Emitter(ServiceProvider);
-
-				var sql = emitter.BuildAddQuery(item, parameters, out PropertyInfo identityProperty);
-
-				using (LogContext.PushProperty("SQL", sql.ToString()))
+				var task = Task.Run(async () =>
 				{
+					var parameters = new List<SqlParameter>();
+					var emitter = new Emitter(ServiceProvider);
+
+					var sql = emitter.BuildAddQuery(item, parameters, out PropertyInfo identityProperty);
+
+					Logger.BeginScope<string>(sql.ToString());
 					Logger.LogDebug($"[REPOSITORY] Add<{item.GetType().Name}>");
 
-					using var command = new SqlCommand(sql, _connection);
-					foreach (var parameter in parameters)
+					using (var command = new SqlCommand(sql, _connection))
 					{
-						command.Parameters.Add(parameter);
-					}
-
-					if (identityProperty != null)
-					{
-						using var reader = await command.ExecuteReaderAsync(ctc.Token);
-						if (await reader.ReadAsync(ctc.Token))
+						foreach (var parameter in parameters)
 						{
-							identityProperty.SetValue(item, await reader.GetFieldValueAsync<object>(0, ctc.Token));
+							command.Parameters.Add(parameter);
+						}
+
+						if (identityProperty != null)
+						{
+							using (var reader = await command.ExecuteReaderAsync(ctc.Token))
+							{
+								if (await reader.ReadAsync(ctc.Token))
+								{
+									identityProperty.SetValue(item, await reader.GetFieldValueAsync<object>(0, ctc.Token));
+									return item;
+								}
+							}
+						}
+						else
+						{
+							await command.ExecuteNonQueryAsync(ctc.Token);
 							return item;
 						}
+
+						throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("unexcpected failure", "insert failed"));
 					}
-					else
-					{
-						await command.ExecuteNonQueryAsync(ctc.Token);
-						return item;
-					}
+				});
 
-					throw new ApiException(HttpStatusCode.InternalServerError, new ApiError("unexcpected failure", "insert failed"));
-				}
-			});
+				if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) == task)
+					return task.Result;
 
-			if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) == task)
-				return task.Result;
-
-			ctc.Cancel();
-			throw new InvalidOperationException("Task exceeded time limit.");
+				ctc.Cancel();
+				throw new InvalidOperationException("Task exceeded time limit.");
+			}
 		}
 
 		/// <summary>
@@ -132,27 +135,31 @@ namespace COFRS.SqlServer
 		/// <param name="keys">The keys that defined the item to be deleted</param>
 		public async Task DeleteAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys)
 		{
-			using var ctc = new CancellationTokenSource();
-			var task = Task.Run(async () =>
+			using (var ctc = new CancellationTokenSource())
 			{
-				var parameters = new List<SqlParameter>();
-				var emitter = new Emitter(ServiceProvider);
-
-				var sql = emitter.BuildDeleteQuery(keys, parameters, T);
-
-				using var command = new SqlCommand(sql, _connection);
-				foreach (var parameter in parameters)
+				var task = Task.Run(async () =>
 				{
-					command.Parameters.Add(parameter);
+					var parameters = new List<SqlParameter>();
+					var emitter = new Emitter(ServiceProvider);
+
+					var sql = emitter.BuildDeleteQuery(keys, parameters, T);
+
+					using (var command = new SqlCommand(sql, _connection))
+					{
+						foreach (var parameter in parameters)
+						{
+							command.Parameters.Add(parameter);
+						}
+
+						await command.ExecuteNonQueryAsync(ctc.Token);
+					}
+				});
+
+				if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
+				{
+					ctc.Cancel();
+					throw new InvalidOperationException("Task exceeded time limit.");
 				}
-
-				await command.ExecuteNonQueryAsync(ctc.Token);
-			});
-
-			if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
-			{
-				ctc.Cancel();
-				throw new InvalidOperationException("Task exceeded time limit.");
 			}
 		}
 
@@ -179,70 +186,70 @@ namespace COFRS.SqlServer
 		/// <returns></returns>
 		public async Task<object> GetCollectionAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys, RqlNode node, bool NoPaging)
 		{
-			using var ctc = new CancellationTokenSource();
-			var task = Task.Run(async () =>
+			using (var ctc = new CancellationTokenSource())
 			{
-				var parameters = new List<SqlParameter>();
-				var pageFilter = RqlUtilities.ExtractClause(RqlNodeType.LIMIT, node);
-				var options = ServiceProvider.GetService<IRepositoryOptions>();
-				var translationOptions = ServiceProvider.GetService<ITranslationOptions>();
-				var emitter = new Emitter(ServiceProvider);
-
-				var rdgeneric = typeof(List<>);
-				var rd = rdgeneric.MakeGenericType(T);
-				var resultList = Activator.CreateInstance(rd);
-
-				var rxgeneric = typeof(RqlCollection<>);
-				var rx = rxgeneric.MakeGenericType(T);
-				var results = Activator.CreateInstance(rx);
-				var countProperty = results.GetType().GetProperty("count");
-				var itemsProperty = results.GetType().GetProperty("items");
-				var limitProperty = results.GetType().GetProperty("limit");
-				var hrefProperty = results.GetType().GetProperty("href");
-				var firstProperty = results.GetType().GetProperty("first");
-				var previousProperty = results.GetType().GetProperty("previous");
-				var nextProperty = results.GetType().GetProperty("next");
-
-				if (!NoPaging)
+				var task = Task.Run(async () =>
 				{
-					if (pageFilter != null && pageFilter.Value<int>(0) < 1)
-					{
-						pageFilter = new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit });
-					}
-					else
-					{
-						var sqlCount = emitter.BuildCollectionCountQuery(keys, node, parameters, T);
+					var parameters = new List<SqlParameter>();
+					var pageFilter = RqlUtilities.ExtractClause(RqlNodeType.LIMIT, node);
+					var options = ServiceProvider.GetService<IRepositoryOptions>();
+					var translationOptions = ServiceProvider.GetService<ITranslationOptions>();
+					var emitter = new Emitter(ServiceProvider);
 
-						using (LogContext.PushProperty("SQL", sqlCount.ToString()))
+					var rdgeneric = typeof(List<>);
+					var rd = rdgeneric.MakeGenericType(T);
+					var resultList = Activator.CreateInstance(rd);
+
+					var rxgeneric = typeof(RqlCollection<>);
+					var rx = rxgeneric.MakeGenericType(T);
+					var results = Activator.CreateInstance(rx);
+					var countProperty = results.GetType().GetProperty("count");
+					var itemsProperty = results.GetType().GetProperty("items");
+					var limitProperty = results.GetType().GetProperty("limit");
+					var hrefProperty = results.GetType().GetProperty("href");
+					var firstProperty = results.GetType().GetProperty("first");
+					var previousProperty = results.GetType().GetProperty("previous");
+					var nextProperty = results.GetType().GetProperty("next");
+
+					if (!NoPaging)
+					{
+						if (pageFilter != null && pageFilter.Value<int>(0) < 1)
 						{
+							pageFilter = new RqlNode(RqlNodeType.LIMIT, new List<int> { 1, options.BatchLimit });
+						}
+						else
+						{
+							var sqlCount = emitter.BuildCollectionCountQuery(keys, node, parameters, T);
+							Logger.BeginScope<string>(sqlCount.ToString());
 							Logger.LogTrace($"[REPOSITORY] ReadCollection<{T.Name}>");
 
 							//	We now have an SQL query that needs to be executed in order to get our object.
-							using var command = new SqlCommand(sqlCount, _connection);
-							foreach (var parameter in parameters)
+							using (var command = new SqlCommand(sqlCount, _connection))
 							{
-								command.Parameters.Add(parameter);
-							}
+								foreach (var parameter in parameters)
+								{
+									command.Parameters.Add(parameter);
+								}
 
-							using var reader = await command.ExecuteReaderAsync(ctc.Token);
-							if (await reader.ReadAsync())
-							{
-								countProperty.SetValue(results, await reader.ReadInt32Async("RecordCount", ctc.Token));
+								using (var reader = await command.ExecuteReaderAsync(ctc.Token))
+								{
+									if (await reader.ReadAsync())
+									{
+										countProperty.SetValue(results, await reader.ReadInt32Async("RecordCount", ctc.Token));
+									}
+								}
 							}
 						}
+
+						if (ctc.Token.IsCancellationRequested)
+							return default;
 					}
 
-					if (ctc.Token.IsCancellationRequested)
-						return default;
-				}
+					parameters.Clear();
+					var sql = emitter.BuildCollectionListQuery(keys, node, Convert.ToInt32(countProperty.GetValue(results)), _options.BatchLimit, pageFilter, parameters, T, NoPaging);
 
-				parameters.Clear();
-				var sql = emitter.BuildCollectionListQuery(keys, node, Convert.ToInt32(countProperty.GetValue(results)), _options.BatchLimit, pageFilter, parameters, T, NoPaging);
-
-				int theCount = 0;
-				Logger.BeginScope<string>(sql.ToString());
-				using (LogContext.PushProperty("SQL", sql.ToString()))
-				{
+					int theCount = 0;
+					Logger.BeginScope<string>(sql.ToString());
 					Logger.LogTrace($"[REPOSITORY] ReadCollection<{T.Name}>");
 
 					if (ctc.Token.IsCancellationRequested)
@@ -256,24 +263,26 @@ namespace COFRS.SqlServer
 							command.Parameters.Add(parameter);
 						}
 
-						using var reader = await command.ExecuteReaderAsync(ctc.Token);
-						while (await reader.ReadAsync(ctc.Token))
+						using (var reader = await command.ExecuteReaderAsync(ctc.Token))
 						{
-							var entity = await reader.ReadAsync(node, T, ctc.Token);
-							var method = resultList.GetType().GetMethod("Add");
-							method.Invoke(resultList, new object[] { entity });
-							theCount++;
+							while (await reader.ReadAsync(ctc.Token))
+							{
+								var entity = await reader.ReadAsync(node, T, ctc.Token);
+								var method = resultList.GetType().GetMethod("Add");
+								method.Invoke(resultList, new object[] { entity });
+								theCount++;
 
-							if (ctc.Token.IsCancellationRequested)
-								return default;
-						}
+								if (ctc.Token.IsCancellationRequested)
+									return default;
+							}
 
-						var toArrayMethod = resultList.GetType().GetMethod("ToArray");
-						itemsProperty.SetValue(results, toArrayMethod.Invoke(resultList, null));
+							var toArrayMethod = resultList.GetType().GetMethod("ToArray");
+							itemsProperty.SetValue(results, toArrayMethod.Invoke(resultList, null));
 
-						if (Convert.ToInt32(countProperty.GetValue(results)) == 0)
-						{
-							countProperty.SetValue(results, theCount);
+							if (Convert.ToInt32(countProperty.GetValue(results)) == 0)
+							{
+								countProperty.SetValue(results, theCount);
+							}
 						}
 					}
 
@@ -328,16 +337,16 @@ namespace COFRS.SqlServer
 					}
 
 					return results;
+				});
+
+				if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
+				{
+					ctc.Cancel();
+					throw new InvalidOperationException("Task exceeded time limit.");
 				}
-			});
 
-			if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
-			{
-				ctc.Cancel();
-				throw new InvalidOperationException("Task exceeded time limit.");
+				return task.Result;
 			}
-
-			return task.Result;
 		}
 
 		/// <summary>
@@ -349,43 +358,47 @@ namespace COFRS.SqlServer
 		/// <returns></returns>
 		public async Task<object> GetSingleAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys, RqlNode node)
 		{
-			using var ctc = new CancellationTokenSource();
-			var task = Task.Run(async () =>
+			using (var ctc = new CancellationTokenSource())
 			{
-				var parameters = new List<SqlParameter>();
-				var emitter = new Emitter(ServiceProvider);
-				var sql = emitter.BuildSingleQuery(keys, node, parameters, T);
-
-				Logger.BeginScope<string>(sql.ToString());
-				Logger.LogDebug($"[REPOSITORY] ReadSingle<{T.Name}>");
-
-				//	We now have an SQL query that needs to be executed in order to get our object.
-				using (var command = new SqlCommand(sql, _connection))
+				var task = Task.Run(async () =>
 				{
-					foreach (var parameter in parameters)
+					var parameters = new List<SqlParameter>();
+					var emitter = new Emitter(ServiceProvider);
+					var sql = emitter.BuildSingleQuery(keys, node, parameters, T);
+
+					Logger.BeginScope<string>(sql.ToString());
+					Logger.LogDebug($"[REPOSITORY] ReadSingle<{T.Name}>");
+
+					//	We now have an SQL query that needs to be executed in order to get our object.
+					using (var command = new SqlCommand(sql, _connection))
 					{
-						command.Parameters.Add(parameter);
+						foreach (var parameter in parameters)
+						{
+							command.Parameters.Add(parameter);
+						}
+
+						using (var reader = await command.ExecuteReaderAsync(ctc.Token))
+						{
+							if (await reader.ReadAsync(ctc.Token))
+							{
+								//	Read the object (of type T) from the database.
+								//	This will create a new object of type T populated with data from the database.
+								return await reader.ReadAsync(node, T, ctc.Token);
+							}
+						}
 					}
 
-					using var reader = await command.ExecuteReaderAsync(ctc.Token);
-					if (await reader.ReadAsync(ctc.Token))
-					{
-						//	Read the object (of type T) from the database.
-						//	This will create a new object of type T populated with data from the database.
-						return await reader.ReadAsync(node, T, ctc.Token);
-					}
+					return default;
+				});
+
+				if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
+				{
+					ctc.Cancel();
+					throw new InvalidOperationException("Task exceeded time limit.");
 				}
 
-				return default;
-			});
-
-			if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
-			{
-				ctc.Cancel();
-				throw new InvalidOperationException("Task exceeded time limit.");
+				return task.Result;
 			}
-
-			return task.Result;
 		}
 
 		/// <summary>
@@ -395,29 +408,33 @@ namespace COFRS.SqlServer
 		/// <returns></returns>
 		public async Task UpdateAsync(object item)
 		{
-			using var ctc = new CancellationTokenSource();
-			var task = Task.Run(async () =>
+			using (var ctc = new CancellationTokenSource())
 			{
-				var parameters = new List<SqlParameter>();
-				var emitter = new Emitter(ServiceProvider);
-				var sql = emitter.BuildUpdateQuery(item, parameters);
+				var task = Task.Run(async () =>
+				{
+					var parameters = new List<SqlParameter>();
+					var emitter = new Emitter(ServiceProvider);
+					var sql = emitter.BuildUpdateQuery(item, parameters);
 
-				using (LogContext.PushProperty("SQL", sql.ToString()))
+					Logger.BeginScope<string>(sql.ToString());
 					Logger.LogTrace($"[REPOSITORY] Update<{item.GetType().Name}>");
 
-				using var command = new SqlCommand(sql, _connection);
-				foreach (var parameter in parameters)
+					using (var command = new SqlCommand(sql, _connection))
+					{
+						foreach (var parameter in parameters)
+						{
+							command.Parameters.Add(parameter);
+						}
+
+						await command.ExecuteNonQueryAsync(ctc.Token);
+					}
+				});
+
+				if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
 				{
-					command.Parameters.Add(parameter);
+					ctc.Cancel();
+					throw new InvalidOperationException("Task exceeded time limit.");
 				}
-
-				await command.ExecuteNonQueryAsync(ctc.Token);
-			});
-
-			if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
-			{
-				ctc.Cancel();
-				throw new InvalidOperationException("Task exceeded time limit.");
 			}
 		}
 		#endregion
