@@ -1408,9 +1408,9 @@ namespace COFRS.SqlServer
 								var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 
 								if (string.IsNullOrWhiteSpace(schema))
-									whereClause.Append($"([{tableName}].[{property.Name}] IN(");
+									whereClause.Append($"[{tableName}].[{property.Name}] IN(");
 								else
-									whereClause.Append($"([{schema}].[{tableName}].[{property.Name}] IN(");
+									whereClause.Append($"[{schema}].[{tableName}].[{property.Name}] IN(");
 
 								for (int i = 1; i < node.Value<List<object>>().Count; i++)
 								{
@@ -1422,7 +1422,7 @@ namespace COFRS.SqlServer
 									whereClause.Append(parameterName);
 								}
 
-								whereClause.Append("))");
+								whereClause.Append(")");
 
 							}
 							else
@@ -1451,9 +1451,9 @@ namespace COFRS.SqlServer
 								var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 
 								if (string.IsNullOrWhiteSpace(schema))
-									whereClause.Append($"([{tableName}].[{property.Name}] NOT IN(");
+									whereClause.Append($"[{tableName}].[{property.Name}] NOT IN(");
 								else
-									whereClause.Append($"([{schema}].[{tableName}].[{property.Name}] NOT IN(");
+									whereClause.Append($"[{schema}].[{tableName}].[{property.Name}] NOT IN(");
 
 								for (int i = 1; i < node.Value<List<object>>().Count; i++)
 								{
@@ -1465,7 +1465,7 @@ namespace COFRS.SqlServer
 									whereClause.Append(parameterName);
 								}
 
-								whereClause.Append("))");
+								whereClause.Append(")");
 
 							}
 							else
@@ -1494,9 +1494,9 @@ namespace COFRS.SqlServer
 								var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 
 								if (string.IsNullOrWhiteSpace(schema))
-									whereClause.Append($"([{tableName}].[{property.Name}] LIKE (");
+									whereClause.Append($"[{tableName}].[{property.Name}] LIKE (");
 								else
-									whereClause.Append($"([{schema}].[{tableName}].[{property.Name}] LIKE (");
+									whereClause.Append($"[{schema}].[{tableName}].[{property.Name}] LIKE (");
 
 								var filter = node.Value<string>(1);
 								filter = filter.Replace("*", "%").Replace("?", "_");
@@ -1533,9 +1533,9 @@ namespace COFRS.SqlServer
 								var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 
 								if (string.IsNullOrWhiteSpace(schema))
-									whereClause.Append($"([{tableName}].[{property.Name}] NOT LIKE (");
+									whereClause.Append($"[{tableName}].[{property.Name}] NOT LIKE (");
 								else
-									whereClause.Append($"([{schema}].[{tableName}].[{property.Name}] NOT LIKE (");
+									whereClause.Append($"[{schema}].[{tableName}].[{property.Name}] NOT LIKE (");
 
 								var filter = node.Value<string>(1);
 								filter = filter.Replace("*", "%").Replace("?", "_");
