@@ -437,6 +437,45 @@ namespace COFRS.SqlServer
 				}
 			}
 		}
+
+		/// <summary>
+		/// Patch Async
+		/// </summary>
+		/// <param name="T">The type of item to patch</param>
+		/// <param name="keys"></param>
+		/// <param name="patchCommands"></param>
+		/// <returns></returns>
+		public async Task PatchAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys, IEnumerable<PatchCommand> patchCommands)
+		{
+			using (var ctc = new CancellationTokenSource())
+			{
+				var task = Task.Run(async () =>
+				{
+					var parameters = new List<SqlParameter>();
+					var emitter = new Emitter(ServiceProvider);
+					var sql = emitter.BuildPatchQuery(keys, patchCommands, parameters, T);
+
+					Logger.BeginScope<string>(sql.ToString());
+					Logger.LogTrace($"[REPOSITORY] Patch<{T.Name}>");
+
+					using (var command = new SqlCommand(sql, _connection))
+					{
+						foreach (var parameter in parameters)
+						{
+							command.Parameters.Add(parameter);
+						}
+
+						await command.ExecuteNonQueryAsync(ctc.Token);
+					}
+				});
+
+				if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
+				{
+					ctc.Cancel();
+					throw new InvalidOperationException("Task exceeded time limit.");
+				}
+			}
+		}
 		#endregion
 
 		#region Helper Functions

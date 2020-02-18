@@ -1144,6 +1144,15 @@
             <param name="item"></param>
             <returns></returns>
         </member>
+        <member name="M:COFRS.SqlServer.SqlServerRepository.PatchAsync(System.Type,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{COFRS.PatchCommand})">
+            <summary>
+            Patch Async
+            </summary>
+            <param name="T">The type of item to patch</param>
+            <param name="keys"></param>
+            <param name="patchCommands"></param>
+            <returns></returns>
+        </member>
         <member name="M:COFRS.SqlServer.SqlServerRepository.Dispose(System.Boolean)">
             <summary>
             Disposes the respository

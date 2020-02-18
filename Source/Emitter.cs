@@ -1148,6 +1148,75 @@ namespace COFRS.SqlServer
 			return sql.ToString();
 		}
 
+
+		internal string BuildPatchQuery(IEnumerable<KeyValuePair<string, object>> keyList, IEnumerable<PatchCommand> patchCommands, List<SqlParameter> parameters, Type T)
+		{
+			var tableAttribute = T.GetCustomAttribute<Table>();
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
+			var properties = T.GetProperties();
+			var sql = new StringBuilder();
+
+			if (string.IsNullOrWhiteSpace(tableAttribute.Schema))
+				sql.AppendLine($"UPDATE [{tableAttribute.Name}]");
+			else
+				sql.AppendLine($"UPDATE [{tableAttribute.Schema}].[{tableAttribute.Name}]");
+
+			bool first = true;
+
+			foreach (var command in patchCommands)
+			{
+				if (string.Equals(command.op, "replace", StringComparison.OrdinalIgnoreCase) || string.Equals(command.op, "add", StringComparison.OrdinalIgnoreCase))
+				{
+					var property = properties.FirstOrDefault(p => string.Equals(p.Name, command.path, StringComparison.OrdinalIgnoreCase));
+
+					if (property != null)
+					{
+						var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
+
+						if (memberAttribute != null)
+						{
+							var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
+							var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
+
+							if (string.Equals(tableName, tableAttribute.Name, StringComparison.InvariantCulture))
+							{
+								if (!memberAttribute.IsPrimaryKey)
+								{
+									var parameterName = $"@P{parameters.Count}";
+									object value = null;
+
+									if (property.PropertyType == typeof(Boolean))
+									{
+										if (command.value.Trim().Substring(0, 1).ToLower() == "T" || command.value.Trim().Substring(0, 1).ToLower() == "Y" || command.value.Trim().Substring(0, 1).ToLower() == "1")
+											value = true;
+										else
+											value = false;
+									}
+
+									parameters.Add(BuildSqlParameter(parameterName, property, value ?? DBNull.Value));
+
+									if (first)
+									{
+										sql.Append($" SET [{columnName}] = {parameterName}");
+										first = false;
+									}
+									else
+									{
+										sql.AppendLine(",");
+										sql.Append($"     [{columnName}] = {parameterName}");
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return sql.ToString();
+		}
 		#region Helper Functions
 		/// <summary>
 		/// Add join conditions
