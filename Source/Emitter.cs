@@ -1148,8 +1148,7 @@ namespace COFRS.SqlServer
 			return sql.ToString();
 		}
 
-
-		internal string BuildPatchQuery(IEnumerable<KeyValuePair<string, object>> keyList, IEnumerable<PatchCommand> patchCommands, List<SqlParameter> parameters, Type T)
+		internal string BuildPatchQuery(IEnumerable<KeyValuePair<string, object>> keyList, IEnumerable<RawPatch> patchCommands, List<SqlParameter> parameters, Type T)
 		{
 			var tableAttribute = T.GetCustomAttribute<Table>();
 
@@ -1168,9 +1167,9 @@ namespace COFRS.SqlServer
 
 			foreach (var command in patchCommands)
 			{
-				if (string.Equals(command.op, "replace", StringComparison.OrdinalIgnoreCase) || string.Equals(command.op, "add", StringComparison.OrdinalIgnoreCase))
+				if (command.Operation == RawPatchOperation.REPLACE || command.Operation == RawPatchOperation.ADD)
 				{
-					var property = properties.FirstOrDefault(p => string.Equals(p.Name, command.path, StringComparison.OrdinalIgnoreCase));
+					var property = properties.FirstOrDefault(p => string.Equals(p.Name, command.ColumnName, StringComparison.OrdinalIgnoreCase));
 
 					if (property != null)
 					{
@@ -1186,17 +1185,42 @@ namespace COFRS.SqlServer
 								if (!memberAttribute.IsPrimaryKey)
 								{
 									var parameterName = $"@P{parameters.Count}";
-									object value = null;
+									parameters.Add(BuildSqlParameter(parameterName, property, command.Value ?? DBNull.Value));
 
-									if (property.PropertyType == typeof(Boolean))
+									if (first)
 									{
-										if (command.value.Trim().Substring(0, 1).ToLower() == "T" || command.value.Trim().Substring(0, 1).ToLower() == "Y" || command.value.Trim().Substring(0, 1).ToLower() == "1")
-											value = true;
-										else
-											value = false;
+										sql.Append($" SET [{columnName}] = {parameterName}");
+										first = false;
 									}
+									else
+									{
+										sql.AppendLine(",");
+										sql.Append($"     [{columnName}] = {parameterName}");
+									}
+								}
+							}
+						}
+					}
+				}
+				else if (command.Operation == RawPatchOperation.REMOVE )
+				{
+					var property = properties.FirstOrDefault(p => string.Equals(p.Name, command.ColumnName, StringComparison.OrdinalIgnoreCase));
 
-									parameters.Add(BuildSqlParameter(parameterName, property, value ?? DBNull.Value));
+					if (property != null)
+					{
+						var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
+
+						if (memberAttribute != null)
+						{
+							var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
+							var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
+
+							if (string.Equals(tableName, tableAttribute.Name, StringComparison.InvariantCulture))
+							{
+								if (!memberAttribute.IsPrimaryKey)
+								{
+									var parameterName = $"@P{parameters.Count}";
+									parameters.Add(BuildSqlParameter(parameterName, property, DBNull.Value));
 
 									if (first)
 									{
@@ -1215,8 +1239,38 @@ namespace COFRS.SqlServer
 				}
 			}
 
+			List<RqlNode> keyNodes = new List<RqlNode>();
+
+			foreach (var pair in keyList)
+			{
+				var property = properties.FirstOrDefault(p => string.Equals(p.Name, pair.Key, StringComparison.OrdinalIgnoreCase));
+
+				if (property != null)
+				{
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
+
+					if (memberAttribute != null)
+					{
+						var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
+						var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
+
+						if (string.Equals(tableName, tableAttribute.Name, StringComparison.InvariantCulture))
+						{
+							keyNodes.Add(new RqlNode(RqlNodeType.EQ, new List<object>() { columnName, pair.Value }));
+						}
+					}
+				}
+			}
+
+			var node = new RqlNode(RqlNodeType.AND, keyNodes);
+			string whereClause = ParseWhereClause(node, null, parameters, T);
+
+			sql.AppendLine();
+			sql.Append("WHERE ");
+			sql.Append(whereClause);
 			return sql.ToString();
 		}
+
 		#region Helper Functions
 		/// <summary>
 		/// Add join conditions

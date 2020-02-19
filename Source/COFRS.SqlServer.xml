@@ -1144,7 +1144,7 @@
             <param name="item"></param>
             <returns></returns>
         </member>
-        <member name="M:COFRS.SqlServer.SqlServerRepository.PatchAsync(System.Type,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{COFRS.PatchCommand})">
+        <member name="M:COFRS.SqlServer.SqlServerRepository.PatchAsync(System.Type,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.IEnumerable{COFRS.RawPatch})">
             <summary>
             Patch Async
             </summary>

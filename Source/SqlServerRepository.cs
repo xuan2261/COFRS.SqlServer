@@ -445,7 +445,7 @@ namespace COFRS.SqlServer
 		/// <param name="keys"></param>
 		/// <param name="patchCommands"></param>
 		/// <returns></returns>
-		public async Task PatchAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys, IEnumerable<PatchCommand> patchCommands)
+		public async Task PatchAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys, IEnumerable<RawPatch> patchCommands)
 		{
 			using (var ctc = new CancellationTokenSource())
 			{

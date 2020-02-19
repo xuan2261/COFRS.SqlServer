@@ -8,7 +8,7 @@
     <Description>A library to aid in the construction of RESTful Web Services</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/mzuniga58/COFRS.SqlServer</RepositoryUrl>
-    <Version>1.1.53-alpha</Version>
+    <Version>1.1.54-alpha</Version>
     <PackageReleaseNotes>Pre-release. DO NOT USE.</PackageReleaseNotes>
     <PackageId>COFRS.SqlServer</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -33,8 +33,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="COFRS" Version="1.1.53-alpha" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.0" />
+    <PackageReference Include="COFRS" Version="1.1.54-alpha" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
   </ItemGroup>
 
   <ItemGroup>
