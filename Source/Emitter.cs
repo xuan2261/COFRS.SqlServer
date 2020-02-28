@@ -162,7 +162,7 @@ namespace COFRS.SqlServer
 				}
 
 				var node = new RqlNode(RqlNodeType.AND, keyNodes);
-				
+
 				whereClause = ParseWhereClause(node, null, parameters, T);
 			}
 
@@ -225,7 +225,7 @@ namespace COFRS.SqlServer
 					}
 
 					//	Only columns that belong to the main table are inserted
-					if ( !string.Equals(tableName, tableAttribute.Name, StringComparison.InvariantCulture))
+					if (!string.Equals(tableName, tableAttribute.Name, StringComparison.InvariantCulture))
 						includeField = false;
 
 					if (includeField)
@@ -269,7 +269,7 @@ namespace COFRS.SqlServer
 			{
 				var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
 
-				if (memberAttribute != null)				{
+				if (memberAttribute != null) {
 					var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
 
 					bool includeField = true;
@@ -1202,7 +1202,7 @@ namespace COFRS.SqlServer
 						}
 					}
 				}
-				else if (command.Operation == RawPatchOperation.REMOVE )
+				else if (command.Operation == RawPatchOperation.REMOVE)
 				{
 					var property = properties.FirstOrDefault(p => string.Equals(p.Name, command.ColumnName, StringComparison.OrdinalIgnoreCase));
 
@@ -1270,6 +1270,91 @@ namespace COFRS.SqlServer
 			sql.Append(whereClause);
 			return sql.ToString();
 		}
+		
+		/// <summary>
+		/// Build Reference Query
+		/// </summary>
+		/// <param name="keyList"></param>
+		/// <param name="parameters"></param>
+		/// <param name="T"></param>
+		/// <returns></returns>
+		public string BuildReferenceQuery(IEnumerable<KeyValuePair<string, object>> keyList, List<SqlParameter> parameters, Type T)
+		{
+			var tableAttribute = T.GetCustomAttribute<Table>();
+
+			if (tableAttribute == null)
+				throw new ApiException(HttpStatusCode.BadRequest, new ApiError("bad_data", $"The class {T.Name} is not an entity model."));
+
+			var properties = T.GetProperties();
+			var sql = new StringBuilder();
+
+			if (string.IsNullOrWhiteSpace(tableAttribute.Schema))
+				sql.AppendLine($"SELECT [{tableAttribute.Name}]");
+			else
+				sql.AppendLine($"SELECT [{tableAttribute.Schema}].[{tableAttribute.Name}]");
+
+			bool first = true;
+
+			foreach (var property in properties)
+			{
+				var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
+
+				if (memberAttribute != null)
+				{
+					var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
+					var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
+
+					if (string.Equals(tableName, tableAttribute.Name, StringComparison.InvariantCulture))
+					{
+						if (memberAttribute.IsPrimaryKey)
+						{
+							if (first)
+							{
+								sql.Append($" [{columnName}]");
+								first = false;
+							}
+							else
+							{
+								sql.AppendLine(",");
+								sql.Append($"       [{columnName}]");
+							}
+						}
+					}
+				}
+			}
+
+			List<RqlNode> keyNodes = new List<RqlNode>();
+
+			foreach (var pair in keyList)
+			{
+				var property = properties.FirstOrDefault(p => string.Equals(p.Name, pair.Key, StringComparison.OrdinalIgnoreCase));
+
+				if (property != null)
+				{
+					var memberAttribute = property.GetCustomAttribute<MemberAttribute>();
+
+					if (memberAttribute != null)
+					{
+						var tableName = string.IsNullOrWhiteSpace(memberAttribute.TableName) ? tableAttribute.Name : memberAttribute.TableName;
+						var columnName = string.IsNullOrWhiteSpace(memberAttribute.ColumnName) ? property.Name : memberAttribute.ColumnName;
+
+						if (string.Equals(tableName, tableAttribute.Name, StringComparison.InvariantCulture))
+						{
+							keyNodes.Add(new RqlNode(RqlNodeType.EQ, new List<object>() { columnName, pair.Value }));
+						}
+					}
+				}
+			}
+
+			var node = new RqlNode(RqlNodeType.AND, keyNodes);
+			string whereClause = ParseWhereClause(node, null, parameters, T);
+
+			sql.AppendLine();
+			sql.Append("WHERE ");
+			sql.Append(whereClause);
+			return sql.ToString();
+		}
+
 
 		#region Helper Functions
 		/// <summary>

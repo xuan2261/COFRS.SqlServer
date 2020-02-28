@@ -8,7 +8,7 @@
     <Description>A library to aid in the construction of RESTful Web Services</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/mzuniga58/COFRS.SqlServer</RepositoryUrl>
-    <Version>1.1.55-alpha</Version>
+    <Version>1.1.56-alpha</Version>
     <PackageReleaseNotes>Pre-release. DO NOT USE.</PackageReleaseNotes>
     <PackageId>COFRS.SqlServer</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>

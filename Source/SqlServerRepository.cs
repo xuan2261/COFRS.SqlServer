@@ -476,6 +476,61 @@ namespace COFRS.SqlServer
 				}
 			}
 		}
+
+		/// <summary>
+		/// Get Reference Keys
+		/// </summary>
+		/// <param name="T">The type of object to query</param>
+		/// <param name="keys">The keys</param>
+		/// <returns></returns>
+		public async Task<IEnumerable<object>> GetReferenceKeysAsync(Type T, IEnumerable<KeyValuePair<string, object>> keys)
+		{
+			using (var ctc = new CancellationTokenSource())
+			{
+				var task = Task.Run(async () =>
+				{
+					var results = new List<object>();
+					var parameters = new List<SqlParameter>();
+					var emitter = new Emitter(ServiceProvider);
+					var sql = emitter.BuildReferenceQuery(keys, parameters, T);
+
+					Logger.BeginScope<string>(sql.ToString());
+					Logger.LogTrace($"[REPOSITORY] GetReferenceKeys<{T.Name}>");
+
+					var properties = T.GetType().GetProperties().Where(p => { var m = p.GetCustomAttribute<MemberAttribute>(); return m != null ? m.IsPrimaryKey : false; });
+					var columnList = new List<string>();
+					foreach (var property in properties)
+						columnList.Add(property.Name);
+					var node = new RqlNode(RqlNodeType.SELECT, columnList);
+
+					using (var command = new SqlCommand(sql, _connection))
+					{
+						foreach (var parameter in parameters)
+						{
+							command.Parameters.Add(parameter);
+						}
+
+						using (var reader = await command.ExecuteReaderAsync(ctc.Token))
+						{
+							while (await reader.ReadAsync(ctc.Token))
+							{
+								results.Add(await reader.ReadAsync(node, T, ctc.Token));
+							}
+						}
+					}
+
+					return results.ToArray();
+				});
+
+				if (await Task.WhenAny(task, Task.Delay(_options.Timeout)) != task)
+				{
+					ctc.Cancel();
+					throw new InvalidOperationException("Task exceeded time limit.");
+				}
+
+				return task.Result;
+			}
+		}
 		#endregion
 
 		#region Helper Functions
