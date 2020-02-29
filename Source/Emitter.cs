@@ -1288,10 +1288,7 @@ namespace COFRS.SqlServer
 			var properties = T.GetProperties();
 			var sql = new StringBuilder();
 
-			if (string.IsNullOrWhiteSpace(tableAttribute.Schema))
-				sql.AppendLine($"SELECT [{tableAttribute.Name}]");
-			else
-				sql.AppendLine($"SELECT [{tableAttribute.Schema}].[{tableAttribute.Name}]");
+			sql.AppendLine($"SELECT ");
 
 			bool first = true;
 
