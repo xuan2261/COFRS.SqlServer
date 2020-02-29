@@ -75,6 +75,15 @@
             <param name="NoPaging">Do not page results even if the result set exceeds the system defined limit. Default value = false.</param>
             <returns></returns>
         </member>
+        <member name="M:COFRS.SqlServer.Emitter.BuildReferenceQuery(System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}},System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.Type)">
+            <summary>
+            Build Reference Query
+            </summary>
+            <param name="keyList"></param>
+            <param name="parameters"></param>
+            <param name="T"></param>
+            <returns></returns>
+        </member>
         <member name="M:COFRS.SqlServer.Emitter.AddJoinConditions(System.Text.StringBuilder,COFRS.Join,System.Collections.Generic.IEnumerable{COFRS.JoinCondition},System.Collections.Generic.List{System.Data.SqlClient.SqlParameter},System.Type)">
             <summary>
             Add join conditions
@@ -1151,6 +1160,14 @@
             <param name="T">The type of item to patch</param>
             <param name="keys"></param>
             <param name="patchCommands"></param>
+            <returns></returns>
+        </member>
+        <member name="M:COFRS.SqlServer.SqlServerRepository.GetReferenceKeysAsync(System.Type,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.String,System.Object}})">
+            <summary>
+            Get Reference Keys
+            </summary>
+            <param name="T">The type of object to query</param>
+            <param name="keys">The keys</param>
             <returns></returns>
         </member>
         <member name="M:COFRS.SqlServer.SqlServerRepository.Dispose(System.Boolean)">
